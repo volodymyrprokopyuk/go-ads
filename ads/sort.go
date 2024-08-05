@@ -1,9 +1,7 @@
 package ads
 
-import "cmp"
-
 // O(n^2), in-place, stable, moving target
-func BubbleSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
+func BubbleSort[T any](slc []T, ord func(a, b T) bool) {
   for i := len(slc); i > 1; i-- {
     swp := false
     for j := 1; j < i; j++ {
@@ -19,7 +17,7 @@ func BubbleSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
 }
 
 // O(n^2), in-place, stable, fixed target, O(n) on sorted array
-func InsertSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
+func InsertSort[T any](slc []T, ord func(a, b T) bool) {
   for i := 1; i < len(slc); i++ {
     for j := i; j > 0; j-- {
       if ord(slc[j], slc[j - 1]) {
@@ -30,7 +28,7 @@ func InsertSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
 }
 
 // O(n*log(n)), in-place, non-stable, generalization of InsertSort
-func ShellSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
+func ShellSort[T any](slc []T, ord func(a, b T) bool) {
   gaps := []int{31, 15, 7, 3, 1}
   for _, gap := range gaps {
     for i := gap; i < len(slc); i++ {
@@ -44,7 +42,7 @@ func ShellSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
 }
 
 // O(n^2), in-place, non-stable, fixed target, O(n^2) on sorted array
-func SelectSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
+func SelectSort[T any](slc []T, ord func(a, b T) bool) {
   for i := 0; i < len(slc) - 1; i++ {
     m, j := i, i + 1
     for ; j < len(slc); j++ {
@@ -59,7 +57,7 @@ func SelectSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
 }
 
 // O(n*log(n)), in-place, non-stable
-func QuickSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
+func QuickSort[T any](slc []T, ord func(a, b T) bool) {
   partition := func(a, b int) int {
     i, p := a, b - 1 // pivot is the last element
     for j := i; j < p; j++ {
@@ -82,7 +80,7 @@ func QuickSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
   sort(0, len(slc))
 }
 
-func merge[T cmp.Ordered](a, b []T, ord func(a, b T) bool) []T {
+func merge[T any](a, b []T, ord func(a, b T) bool) []T {
   res := make([]T, 0, len(a) + len(b))
   i, j := 0, 0
   for i < len(a) && j < len(b) {
@@ -106,7 +104,7 @@ func merge[T cmp.Ordered](a, b []T, ord func(a, b T) bool) []T {
 }
 
 // O(n*log(n)), copy, stable, external sorting in files
-func MergeSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) []T {
+func MergeSort[T any](slc []T, ord func(a, b T) bool) []T {
   if len(slc) < 2 {
     return slc
   }
@@ -115,7 +113,7 @@ func MergeSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) []T {
 }
 
 // O(log(n)), binary search of an ordered slice
-func BinarySearch[T cmp.Ordered](slc []T, val T, cmp func(a, b T) int) int {
+func BinarySearch[T any](slc []T, val T, cmp func(a, b T) int) int {
   a, b := 0, len(slc)
   for a < b {
     m := (a + b - 1) / 2

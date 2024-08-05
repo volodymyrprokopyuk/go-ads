@@ -24,7 +24,7 @@ func lt[T cmp.Ordered](a, b T) bool {
 }
 
 func gt[T cmp.Ordered](a, b T) bool {
-  return a > b
+  return b < a
 }
 
 func cm[T cmp.Ordered](a, b T) int {
@@ -36,7 +36,7 @@ func cm[T cmp.Ordered](a, b T) int {
   return 0
 }
 
-type tcase[T cmp.Ordered] struct {
+type tcase[T any] struct {
   name string
   slc, exp []T
 }
