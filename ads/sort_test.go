@@ -53,6 +53,8 @@ func TestInPlaceSort(t *testing.T) {
     sort func(slc []int, ord func(a, b int) bool)
   }{
     {"bubble sort", ads.BubbleSort[int]},
+    {"insert sort", ads.InsertSort[int]},
+    {"shell sort", ads.ShellSort[int]},
   }
   for _, s := range sorts {
     for _, c := range cases() {

@@ -17,6 +17,8 @@ func gt[T cmp.Ordered](a, b T) bool {
 
 func main() {
   slc := []int{3, 1, 4, 9, 2, 8, 5, 6, 7, 9, 0}
-  ads.BubbleSort(slc, lt)
+  // ads.BubbleSort(slc, lt)
+  // ads.InsertSort(slc, gt)
+  ads.ShellSort(slc, lt)
   fmt.Println(slc)
 }
