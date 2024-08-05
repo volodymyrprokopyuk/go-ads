@@ -57,3 +57,59 @@ func SelectSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
     }
   }
 }
+
+// O(n*log(n)), in-place, non-stable
+func QuickSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
+  partition := func(a, b int) int {
+    i, p := a, b - 1 // pivot is the last element
+    for j := i; j < p; j++ {
+      if ord(slc[j], slc[p]) {
+        slc[i], slc[j] = slc[j], slc[i]
+        i++
+      }
+    }
+    slc[i], slc[p] = slc[p], slc[i]
+    return i
+  }
+  var sort func(a, b int) // declaration for recursive function expression
+  sort = func(a, b int) {
+    if b - a < 2 {
+      return
+    }
+    p := partition(a, b)
+    sort(a, p); sort(p + 1, b)
+  }
+  sort(0, len(slc))
+}
+
+func merge[T cmp.Ordered](a, b []T, ord func(a, b T) bool) []T {
+  res := make([]T, 0, len(a) + len(b))
+  i, j := 0, 0
+  for i < len(a) && j < len(b) {
+    if ord(a[i], b[j]) {
+      res = append(res, a[i])
+      i++
+    } else {
+      res = append(res, b[j])
+      j++
+    }
+  }
+  for i < len(a) {
+    res = append(res, a[i])
+    i++
+  }
+  for j < len(b) {
+    res = append(res, b[j])
+    j++
+  }
+  return res
+}
+
+// O(n*log(n)), copy, stable, external sorting in files
+func MergeSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) []T {
+  if len(slc) < 2 {
+    return slc
+  }
+  m := len(slc) / 2
+  return merge(MergeSort(slc[:m], ord), MergeSort(slc[m:], ord), ord)
+}

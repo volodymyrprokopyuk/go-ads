@@ -56,12 +56,30 @@ func TestInPlaceSort(t *testing.T) {
     {"insert sort", ads.InsertSort[int]},
     {"shell sort", ads.ShellSort[int]},
     {"select sort", ads.SelectSort[int]},
+    {"quick sort", ads.QuickSort[int]},
   }
   for _, s := range sorts {
     for _, c := range cases() {
       s.sort(c.slc, lt)
       if !SliceEqual(c.slc, c.exp) {
         t.Errorf("%v: %v: expected %v, got %v", s.name, c.name, c.exp, c.slc)
+      }
+    }
+  }
+}
+
+func TestCopySort(t *testing.T) {
+  sorts := []struct{
+    name string
+    sort func(slc []int, ord func(a, b int) bool) []int
+  }{
+    {"merge sort", ads.MergeSort[int]},
+  }
+  for _, s := range sorts {
+    for _, c := range cases() {
+      got := s.sort(c.slc, lt)
+      if !SliceEqual(got, c.exp) {
+        t.Errorf("%v: %v: expected %v, got %v", s.name, c.name, c.exp, got)
       }
     }
   }

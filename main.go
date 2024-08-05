@@ -18,8 +18,10 @@ func gt[T cmp.Ordered](a, b T) bool {
 func main() {
   slc := []int{3, 1, 4, 9, 2, 8, 5, 6, 7, 9, 0}
   // ads.BubbleSort(slc, lt)
-  // ads.InsertSort(slc, gt)
+  // ads.InsertSort(slc, lt)
   // ads.ShellSort(slc, lt)
-  ads.SelectSort(slc, gt)
+  // ads.SelectSort(slc, lt)
+  ads.QuickSort(slc, lt)
   fmt.Println(slc)
+  // fmt.Println(ads.MergeSort(slc, lt))
 }
