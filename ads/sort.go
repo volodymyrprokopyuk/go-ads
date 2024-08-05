@@ -42,3 +42,18 @@ func ShellSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
     }
   }
 }
+
+// O(n^2), in-place, non-stable, fixed target, O(n^2) on sorted array
+func SelectSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) {
+  for i := 0; i < len(slc) - 1; i++ {
+    m, j := i, i + 1
+    for ; j < len(slc); j++ {
+      if ord(slc[j], slc[m]) {
+        m = j
+      }
+    }
+    if m != i {
+      slc[i], slc[m] = slc[m], slc[i]
+    }
+  }
+}

@@ -55,6 +55,7 @@ func TestInPlaceSort(t *testing.T) {
     {"bubble sort", ads.BubbleSort[int]},
     {"insert sort", ads.InsertSort[int]},
     {"shell sort", ads.ShellSort[int]},
+    {"select sort", ads.SelectSort[int]},
   }
   for _, s := range sorts {
     for _, c := range cases() {
