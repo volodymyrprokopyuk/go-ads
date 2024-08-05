@@ -113,3 +113,20 @@ func MergeSort[T cmp.Ordered](slc []T, ord func(a, b T) bool) []T {
   m := len(slc) / 2
   return merge(MergeSort(slc[:m], ord), MergeSort(slc[m:], ord), ord)
 }
+
+// O(log(n)), binary search of an ordered slice
+func BinarySearch[T cmp.Ordered](slc []T, val T, cmp func(a, b T) int) int {
+  a, b := 0, len(slc)
+  for a < b {
+    m := (a + b - 1) / 2
+    switch cmp(val, slc[m]) {
+    case -1:
+      b = m
+    case 1:
+      a = m + 1
+    default:
+      return m
+    }
+  }
+  return -1
+}
