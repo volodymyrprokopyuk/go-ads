@@ -3,6 +3,7 @@ package main
 import (
 	"cmp"
 	"fmt"
+	"strconv"
 
 	"github.com/volodymyrprokopyuk/go-ads/ads"
 )
@@ -24,31 +25,56 @@ func cm[T cmp.Ordered](a, b T) int {
   return 0
 }
 
-func main() {
-  var lst ads.DList[int]
-  lst.PushHead(1, 2, 3)
-  // lst.PushTail(1, 2, 3)
+func djb2(str string) int {
+  hash := 5381
+  for _, chr := range str {
+    hash = hash << 5 + hash + int(chr)
+  }
+  return hash
+}
 
-  // _, _ = lst.PopTail()
-  // val, _ := lst.PopTail()
-  // val, _ = lst.PopTail()
-  // fmt.Println(val)
-
-  var nd *ads.LNode[int]
-  for _, nd = range lst.Backward() {
-    if nd.Value() == 3 {
-      break
+func collision() {
+  n := 99
+  seen := make(map[int]string, n)
+  for i := range n {
+    key := strconv.Itoa(i)
+    hash := djb2(key) % 101
+    if k, exist := seen[hash]; exist {
+      fmt.Printf("%v, %v => %v\n", k, key, hash)
     }
+    seen[hash] = key
   }
-  // lst.Insert(10, nd)
-  lst.Delete(nd)
+}
 
-  for _, nd := range lst.Backward() {
-    fmt.Printf("%v ", nd.Value())
+type Int int
+
+func (i Int) String() string {
+  return strconv.Itoa(int(i))
+}
+
+func main() {
+  // collision()
+
+  // i := Int(1)
+  // fmt.Println(i.String())
+
+  htb := ads.NewHTable[Int, string](101)
+
+  htb.Set(Int(66), ">66")
+  htb.Set(Int(98), ">98")
+  htb.Set(Int(98), ">>98")
+
+  fmt.Println(htb.Length())
+  for k, v := range htb.Entries() {
+    fmt.Println(k, v)
   }
-  fmt.Println()
-  for _, nd := range lst.Forward() {
-    fmt.Printf("%v ", nd.Value())
-  }
-  fmt.Println()
+
+  fmt.Println(htb.Get(Int(66)))
+  fmt.Println(htb.Get(Int(98)))
+  fmt.Println(htb.Get(Int(99)))
+
+  fmt.Println(htb.Delete(Int(66)))
+  fmt.Println(htb.Delete(Int(98)))
+  fmt.Println(htb.Delete(Int(99)))
+  fmt.Println(htb.Length())
 }

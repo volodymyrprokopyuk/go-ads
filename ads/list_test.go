@@ -22,6 +22,18 @@ func TestList(t *testing.T) {
   if got != exp {
     t.Errorf("invalid pop: expected %v, got %v", exp, got)
   }
+  exp = 10
+  for _, nd := range lst.Backward() {
+    nd.SetValue(exp)
+    break
+  }
+  for _, nd := range lst.Backward() {
+    got := nd.Value()
+    if got != exp {
+      t.Errorf("invalid set value: expected %v, got %v", exp, got)
+    }
+    break
+  }
   got, _ = lst.Pop()
   _, err := lst.Peek()
   if err == nil {

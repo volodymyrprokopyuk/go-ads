@@ -11,6 +11,10 @@ func (n *LNode[T]) Value() T {
   return n.value
 }
 
+func (n *LNode[T]) SetValue(val T) {
+  n.value = val
+}
+
 type List[T any] struct {
   head *LNode[T]
   length int
