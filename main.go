@@ -55,9 +55,6 @@ func (i Int) String() string {
 func main() {
   // collision()
 
-  // i := Int(1)
-  // fmt.Println(i.String())
-
   htb := ads.NewHTable[Int, string](101)
 
   htb.Set(Int(66), ">66")
@@ -77,4 +74,6 @@ func main() {
   fmt.Println(htb.Delete(Int(98)))
   fmt.Println(htb.Delete(Int(99)))
   fmt.Println(htb.Length())
+
+  fmt.Println(2 ^ 3)
 }

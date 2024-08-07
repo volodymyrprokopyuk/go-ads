@@ -1,6 +1,5 @@
 package ads
 
-
 // O(n) non-cryptographic hash function
 func djb2(str string) int {
   hash := 5381
@@ -39,8 +38,8 @@ func (t *HTable[K, V]) Entries() func(yield func(key K, val V) bool) {
     buckets: for i < cap(t.buckets) {
       bkt := t.buckets[i]
       for _, nd := range bkt.Backward() {
-        ent := nd.Value()
-        if !yield(ent.key, ent.value) {
+        e := nd.Value()
+        if !yield(e.key, e.value) {
           break buckets
         }
       }
@@ -86,7 +85,7 @@ func (t *HTable[K, V]) Delete(key K) (V, bool) {
   for _, nd := range bkt.Backward() { // linear search in a bucket
     e := nd.Value()
     if e.key == key {
-      bkt.Delete(nd) // the key deleted
+      bkt.Delete(nd) // delete the key
       t.length--
       return e.value, true
     }
