@@ -46,34 +46,29 @@ func collision() {
   }
 }
 
-type Int int
-
-func (i Int) String() string {
-  return strconv.Itoa(int(i))
-}
-
 func main() {
   // collision()
 
-  htb := ads.NewHTable[Int, string](101)
+  htb := ads.NewHTable[int, string](
+    101, func (a int) string { return strconv.Itoa(a) },
+    func(a, b int) bool { return a == b },
+  )
 
-  htb.Set(Int(66), ">66")
-  htb.Set(Int(98), ">98")
-  htb.Set(Int(98), ">>98")
+  htb.Set(66, ">66")
+  htb.Set(98, ">98")
+  htb.Set(98, ">>98")
 
   fmt.Println(htb.Length())
   for k, v := range htb.Entries() {
     fmt.Println(k, v)
   }
 
-  fmt.Println(htb.Get(Int(66)))
-  fmt.Println(htb.Get(Int(98)))
-  fmt.Println(htb.Get(Int(99)))
+  fmt.Println(htb.Get(66))
+  fmt.Println(htb.Get(98))
+  fmt.Println(htb.Get(99))
 
-  fmt.Println(htb.Delete(Int(66)))
-  fmt.Println(htb.Delete(Int(98)))
-  fmt.Println(htb.Delete(Int(99)))
+  fmt.Println(htb.Delete(66))
+  fmt.Println(htb.Delete(98))
+  fmt.Println(htb.Delete(99))
   fmt.Println(htb.Length())
-
-  fmt.Println(2 ^ 3)
 }
