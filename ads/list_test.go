@@ -112,16 +112,16 @@ func TestDListPushPeekPopTail(t *testing.T) {
   }
 }
 
-func DListBackward[T any](lst *ads.DList[T]) []T {
-  slc := make([]T, lst.Length())
+func DListBackward(lst ads.DList[int]) []int {
+  slc := make([]int, lst.Length())
   for i, nd := range lst.Backward() {
     slc[i] = nd.Value()
   }
   return slc
 }
 
-func DListForward[T any](lst *ads.DList[T]) []T {
-  slc := make([]T, lst.Length())
+func DListForward(lst ads.DList[int]) []int {
+  slc := make([]int, lst.Length())
   for i, nd := range lst.Forward() {
     slc[i] = nd.Value()
   }
@@ -133,12 +133,12 @@ func TestDListBackwardForward(t *testing.T) {
   lst.PushHead(3, 4)
   lst.PushTail(2, 1)
   exp := []int{4, 3, 2, 1}
-  got := DListBackward(&lst)
+  got := DListBackward(lst)
   if !SliceEqual(got, exp) {
     t.Errorf("invalid backward: expected %v, got %v", exp, got)
   }
   exp = []int{1, 2, 3, 4}
-  got = DListForward(&lst)
+  got = DListForward(lst)
   if !SliceEqual(got, exp) {
     t.Errorf("invalid forward: expected %v, got %v", exp, got)
   }
@@ -165,7 +165,7 @@ func TestDListInsert(t *testing.T) {
       }
     }
     lst.Insert(c.insVal, nd)
-    got := DListBackward(&lst)
+    got := DListBackward(lst)
     if !SliceEqual(got, c.exp) {
       t.Errorf("invalid insert: %v: expected %v, got %v", c.name, c.exp, got)
     }
@@ -194,7 +194,7 @@ func TestDListDelete(t *testing.T) {
       }
     }
     lst.Delete(nd)
-    got := DListBackward(&lst)
+    got := DListBackward(lst)
     if !SliceEqual(got, c.exp) {
       t.Errorf("invalid delete: %v: expected %v, got %v", c.name, c.exp, got)
     }

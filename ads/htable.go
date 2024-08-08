@@ -23,8 +23,8 @@ type HTable[K, V any] struct {
 
 func NewHTable[K, V any](
   cap int, keyStr func(key K) string, keyEq func(a, b K) bool,
-) *HTable[K, V] {
-  return &HTable[K, V]{
+) HTable[K, V] {
+  return HTable[K, V]{
     buckets: make([]DList[entry[K, V]], cap), keyStr: keyStr, keyEq: keyEq,
   }
 }
@@ -93,4 +93,98 @@ func (t *HTable[K, V]) Delete(key K) (V, bool) {
   }
   var val V
   return val, false // the key not found
+}
+
+type HSet[K comparable, V any] struct {
+  htb map[K]V
+  valKey func(val V) K
+}
+
+func NewHSet[K comparable, V any](cap int, valKey func(val V) K) HSet[K, V] {
+  return HSet[K, V]{htb: make(map[K]V, cap), valKey: valKey}
+}
+
+func (s *HSet[K, V]) Length() int {
+  return len(s.htb)
+}
+
+func (s *HSet[K, V]) Entries() func (yield func (key K, val V) bool) {
+  return func (yield func (key K, val V) bool) {
+    for key, val := range s.htb {
+      if !yield(key, val) {
+        break
+      }
+    }
+  }
+}
+
+// O(1)
+func (s *HSet[K, V]) Set(vals ...V) {
+  for _, val := range vals {
+    s.htb[s.valKey(val)] = val
+  }
+}
+
+// O(1)
+func (s *HSet[K, V]) Get(val V) (V, bool) {
+  val, exist := s.htb[s.valKey(val)]
+  return val, exist
+}
+
+// O(1)
+func (s *HSet[K, V]) Delete(val V) (V, bool) {
+  val, exist := s.htb[s.valKey(val)]
+  if exist {
+    delete(s.htb, s.valKey(val))
+  }
+  return val, exist
+}
+
+// O(n)
+func (s *HSet[K, V]) Subset(set HSet[K, V]) bool {
+  for _, val := range s.Entries() {
+    if _, exist := set.Get(val); !exist {
+      return false
+    }
+  }
+  return true
+}
+
+// O(n)
+func (s *HSet[K, V]) Equal(set HSet[K, V]) bool {
+  return s.Length() == set.Length() && s.Subset(set)
+}
+
+// O(m + n)
+func (s *HSet[K, V]) Union(set HSet[K, V]) HSet[K, V] {
+  res := NewHSet(s.Length() + set.Length(), s.valKey)
+  for _, val := range s.Entries() {
+    res.Set(val)
+  }
+  for _, val := range set.Entries() {
+    res.Set(val)
+  }
+  return res
+}
+
+// O(n)
+func (s *HSet[K, V]) Intersect(set HSet[K, V]) HSet[K, V] {
+  res := NewHSet(s.Length(), s.valKey)
+  for _, val := range s.Entries() {
+    if _, exist := set.Get(val); exist {
+      res.Set(val)
+    }
+  }
+  return res
+}
+
+// O(n)
+func (s *HSet[K, V]) Diff(set HSet[K, V]) HSet[K, V] {
+  res := NewHSet(s.Length(), s.valKey)
+  for _, val := range s.Entries() {
+    if _, exist := set.Get(val); !exist {
+      res.Set(val)
+    }
+  }
+  return res
 }
