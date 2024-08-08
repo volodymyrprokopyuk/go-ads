@@ -19,11 +19,12 @@ func newTree(vals []int) ads.BSTree[int, int] {
 }
 
 func main() {
-  tree := newTree([]int{8, 1, 3, 2, 6, 0, 5, 4, 7, 9})
+  // tree := newTree([]int{8, 1, 3, 2, 6, 0, 5, 4, 7, 9})
+  tree := newTree([]int{})
   for i, nd := range tree.InOrder() {
     fmt.Println(i, nd.Key(), nd.Value())
-    if i == 5 {
-      break
-    }
+    // if i == 6 {
+    //   break
+    // }
   }
 }

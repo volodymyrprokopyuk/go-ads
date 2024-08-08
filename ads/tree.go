@@ -49,6 +49,63 @@ func (t *BSTree[K, V]) InOrder() func(yield func(i int, nd *TNode[K, V]) bool) {
   }
 }
 
+// Depth-first search DFS
+func (t *BSTree[K, V]) PreOrder() func(yield func(i int, nd *TNode[K, V]) bool) {
+  i, more := 0, true
+  return func(yield func(i int, nd *TNode[K, V]) bool) {
+    var preOrder func(nd *TNode[K, V])
+    preOrder = func(nd *TNode[K, V]) {
+      if nd != nil {
+        if !more {
+          return
+        }
+        more = yield(i, nd)
+        i++
+        preOrder(nd.left)
+        preOrder(nd.right)
+      }
+    }
+    preOrder(t.root)
+  }
+}
+
+func (t *BSTree[K, V]) PostOrder() func(yield func(i int, nd *TNode[K, V]) bool) {
+  i, more := 0, true
+  return func(yield func(i int, nd *TNode[K, V]) bool) {
+    var postOrder func(nd *TNode[K, V])
+    postOrder = func(nd *TNode[K, V]) {
+      if nd != nil {
+        postOrder(nd.left)
+        postOrder(nd.right)
+        if !more {
+          return
+        }
+        more = yield(i, nd)
+        i++
+      }
+    }
+    postOrder(t.root)
+  }
+}
+
+func (t *BSTree[K, V]) LevelOrder() func(yield func(i int, nd *TNode[K, V]) bool) {
+  return func(yield func(i int, nd *TNode[K, V]) bool) {
+    i := 0
+    var que Queue[*TNode[K, V]]
+    que.Enq(t.root)
+    for que.Length() > 0 {
+      nd, _ := que.Deq()
+      if nd != nil {
+        if !yield(i, nd) {
+          break
+        }
+        i++
+        que.Enq(nd.left); que.Enq(nd.right)
+      }
+    }
+  }
+}
+
 func (t *BSTree[K, V]) Set(val V) {
   key := t.valKey(val)
   var set func(nd *TNode[K, V]) *TNode[K, V] // recursive function expression
