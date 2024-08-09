@@ -6,12 +6,18 @@ import (
 	"github.com/volodymyrprokopyuk/go-ads/ads"
 )
 
-func TestBSTreeTraversals(t *testing.T) {
-  var tree = ads.NewBSTree[int, int](
+func newBSTree() ads.BSTree[int, int] {
+  return ads.NewBSTree[int, int](
     func(val int) int { return val },
     func(a, b int) bool { return a < b },
   )
-  tree.Set([]int{6, 3, 1, 2, 9, 0, 5, 4, 7, 8, 0}...)
+}
+
+var treeSlice = []int{6, 3, 1, 2, 9, 0, 5, 4, 7, 8, 0}
+
+func TestBSTreeTraversals(t *testing.T) {
+  tree := newBSTree()
+  tree.Set(treeSlice...)
   exp := []int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
   got := make([]int, len(exp))
   for i, nd := range tree.InOrder() {
@@ -57,11 +63,8 @@ func TestBSTreeTraversals(t *testing.T) {
 }
 
 func TestBSTreeGetMinMax(t *testing.T) {
-  var tree = ads.NewBSTree[int, int](
-    func(val int) int { return val },
-    func(a, b int) bool { return a < b },
-  )
-  tree.Set([]int{6, 3, 1, 2, 9, 0, 5, 4, 7, 8, 0}...)
+  tree := newBSTree()
+  tree.Set(treeSlice...)
   for _, exp := range []int{3, 9} {
     got, exist := tree.Get(exp)
     if !exist || got.Value() != exp {
@@ -82,5 +85,23 @@ func TestBSTreeGetMinMax(t *testing.T) {
   got = tree.Max()
   if got == nil || got.Value() != exp {
     t.Errorf("invalid max: expected %v, got %v", exp, got)
+  }
+}
+
+func TestBSTreeDelete(t *testing.T) {
+  for _, val := range []int{2, 5, 6, 7} {
+    tree := newBSTree()
+    tree.Set(treeSlice...)
+    deleted := tree.Delete(val)
+    _, exist := tree.Get(val)
+    if !deleted || exist {
+      t.Errorf("invalid delete: value %v is not deleted", val)
+    }
+  }
+  tree := newBSTree()
+  tree.Set(treeSlice...)
+  val := 99
+  if tree.Delete(val) {
+    t.Errorf("invalid delete: deleted non-existing value %v", val)
   }
 }
