@@ -1,40 +1,36 @@
 package ads
 
-type TNode[K, V any] struct {
-  key K
+type Node[V any] struct {
   value V
-  left, right *TNode[K, V]
+  left, right *Node[V]
 }
 
-func (n *TNode[K, V]) Key() K {
-  return n.key
-}
-
-func (n *TNode[K, V]) Value() V {
+func (n *Node[V]) Value() V {
   return n.value
 }
 
+func (n *Node[V]) SetValue(val V) {
+  n.value = val
+}
+
 type BSTree[K, V any] struct {
-  root *TNode[K, V]
+  root *Node[V]
   valKey func(val V) K
   keyOrd func (a, b K) bool
-  keyEq func(a, b K) bool
 }
 
 func NewBSTree[K, V any](
-  valKey func(val V) K,
-  keyOrd func (a, b K) bool,
-  keyEq func(a, b K) bool,
+  valKey func(val V) K, keyOrd func (a, b K) bool,
 ) BSTree[K, V] {
-  return BSTree[K, V]{valKey: valKey, keyOrd: keyOrd, keyEq: keyEq}
+  return BSTree[K, V]{valKey: valKey, keyOrd: keyOrd}
 }
 
 // sort order
-func (t *BSTree[K, V]) InOrder() func(yield func(i int, nd *TNode[K, V]) bool) {
+func (t *BSTree[K, V]) InOrder() func(yield func(i int, nd *Node[V]) bool) {
   i, more := 0, true
-  return  func(yield func(i int, nd *TNode[K, V]) bool) {
-    var inOrder func(nd *TNode[K, V])
-    inOrder = func(nd *TNode[K, V]) {
+  return  func(yield func(i int, nd *Node[V]) bool) {
+    var inOrder func(nd *Node[V])
+    inOrder = func(nd *Node[V]) {
       if nd != nil {
         inOrder(nd.left)
         if !more { // handle early exit from the iterator
@@ -49,12 +45,12 @@ func (t *BSTree[K, V]) InOrder() func(yield func(i int, nd *TNode[K, V]) bool) {
   }
 }
 
-// Depth-first search DFS
-func (t *BSTree[K, V]) PreOrder() func(yield func(i int, nd *TNode[K, V]) bool) {
+// depth-first search DFS, prefix notation
+func (t *BSTree[K, V]) PreOrder() func(yield func(i int, nd *Node[V]) bool) {
   i, more := 0, true
-  return func(yield func(i int, nd *TNode[K, V]) bool) {
-    var preOrder func(nd *TNode[K, V])
-    preOrder = func(nd *TNode[K, V]) {
+  return func(yield func(i int, nd *Node[V]) bool) {
+    var preOrder func(nd *Node[V])
+    preOrder = func(nd *Node[V]) {
       if nd != nil {
         if !more {
           return
@@ -69,11 +65,12 @@ func (t *BSTree[K, V]) PreOrder() func(yield func(i int, nd *TNode[K, V]) bool) 
   }
 }
 
-func (t *BSTree[K, V]) PostOrder() func(yield func(i int, nd *TNode[K, V]) bool) {
+// postfix notation
+func (t *BSTree[K, V]) PostOrder() func(yield func(i int, nd *Node[V]) bool) {
   i, more := 0, true
-  return func(yield func(i int, nd *TNode[K, V]) bool) {
-    var postOrder func(nd *TNode[K, V])
-    postOrder = func(nd *TNode[K, V]) {
+  return func(yield func(i int, nd *Node[V]) bool) {
+    var postOrder func(nd *Node[V])
+    postOrder = func(nd *Node[V]) {
       if nd != nil {
         postOrder(nd.left)
         postOrder(nd.right)
@@ -88,10 +85,11 @@ func (t *BSTree[K, V]) PostOrder() func(yield func(i int, nd *TNode[K, V]) bool)
   }
 }
 
-func (t *BSTree[K, V]) LevelOrder() func(yield func(i int, nd *TNode[K, V]) bool) {
-  return func(yield func(i int, nd *TNode[K, V]) bool) {
+// breadth-first search BFS
+func (t *BSTree[K, V]) LevelOrder() func(yield func(i int, nd *Node[V]) bool) {
+  return func(yield func(i int, nd *Node[V]) bool) {
     i := 0
-    var que Queue[*TNode[K, V]]
+    var que Queue[*Node[V]]
     que.Enq(t.root)
     for que.Length() > 0 {
       nd, _ := que.Deq()
@@ -108,15 +106,17 @@ func (t *BSTree[K, V]) LevelOrder() func(yield func(i int, nd *TNode[K, V]) bool
 
 func (t *BSTree[K, V]) Set(val V) {
   key := t.valKey(val)
-  var set func(nd *TNode[K, V]) *TNode[K, V] // recursive function expression
-  set = func(nd *TNode[K, V]) *TNode[K, V] {
+  // recursive function expression requires variable declaration
+  var set func(nd *Node[V]) *Node[V]
+  set = func(nd *Node[V]) *Node[V] {
     if nd == nil {
-      return &TNode[K, V]{key: key, value: val}
+      return &Node[V]{value: val}
     }
-    switch {
-    case t.keyOrd(key, nd.key):
+    ndKey := t.valKey(nd.value)
+    switch { // binary search
+    case t.keyOrd(key, ndKey):
       nd.left = set(nd.left)
-    case t.keyOrd(nd.key, key):
+    case t.keyOrd(ndKey, key):
       nd.right = set(nd.right)
     default:
       nd.value = val // update the node value for an existing key
@@ -124,4 +124,24 @@ func (t *BSTree[K, V]) Set(val V) {
     return nd
   }
   t.root = set(t.root)
+}
+
+func (t *BSTree[K, V]) Get(val V) (*Node[V], bool) {
+  key := t.valKey(val)
+  var get func (nd *Node[V]) (*Node[V], bool)
+  get = func (nd *Node[V]) (*Node[V], bool) {
+    if nd == nil {
+      return nil, false // the value is not found
+    }
+    ndKey := t.valKey(nd.value)
+    switch { // binary search
+    case t.keyOrd(key, ndKey):
+      return get(nd.left)
+    case t.keyOrd(ndKey, key):
+      return get(nd.right)
+    default:
+      return nd, true // the value is found
+    }
+  }
+  return get(t.root)
 }
