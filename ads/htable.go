@@ -14,6 +14,8 @@ type entry[K, V any] struct {
   value V
 }
 
+type keyValueIter[K, V any] func(yield func(key K, val V) bool)
+
 type HTable[K, V any] struct {
   buckets []DList[entry[K, V]]
   length int
@@ -33,7 +35,7 @@ func (t *HTable[K, V]) Length() int {
   return t.length
 }
 
-func (t *HTable[K, V]) Entries() func(yield func(key K, val V) bool) {
+func (t *HTable[K, V]) Entries() keyValueIter[K, V] {
   i := 0
   return func(yield func(key K, val V) bool) {
     buckets: for i < cap(t.buckets) {
@@ -108,7 +110,7 @@ func (s *HSet[K, V]) Length() int {
   return len(s.htb)
 }
 
-func (s *HSet[K, V]) Entries() func (yield func (key K, val V) bool) {
+func (s *HSet[K, V]) Entries() keyValueIter[K, V] {
   return func (yield func (key K, val V) bool) {
     for key, val := range s.htb {
       if !yield(key, val) {
@@ -126,24 +128,24 @@ func (s *HSet[K, V]) Set(vals ...V) {
 }
 
 // O(1)
-func (s *HSet[K, V]) Get(val V) (V, bool) {
-  val, exist := s.htb[s.valKey(val)]
-  return val, exist
+func (s *HSet[K, V]) Get(val V) bool {
+  _, exist := s.htb[s.valKey(val)]
+  return exist
 }
 
 // O(1)
-func (s *HSet[K, V]) Delete(val V) (V, bool) {
-  val, exist := s.htb[s.valKey(val)]
+func (s *HSet[K, V]) Delete(val V) bool {
+  _, exist := s.htb[s.valKey(val)]
   if exist {
     delete(s.htb, s.valKey(val))
   }
-  return val, exist
+  return exist
 }
 
 // O(n)
 func (s *HSet[K, V]) Subset(set HSet[K, V]) bool {
   for _, val := range s.Entries() {
-    if _, exist := set.Get(val); !exist {
+    if !set.Get(val) {
       return false
     }
   }
@@ -171,7 +173,7 @@ func (s *HSet[K, V]) Union(set HSet[K, V]) HSet[K, V] {
 func (s *HSet[K, V]) Intersect(set HSet[K, V]) HSet[K, V] {
   res := NewHSet(s.Length(), s.valKey)
   for _, val := range s.Entries() {
-    if _, exist := set.Get(val); exist {
+    if set.Get(val) {
       res.Set(val)
     }
   }
@@ -182,7 +184,7 @@ func (s *HSet[K, V]) Intersect(set HSet[K, V]) HSet[K, V] {
 func (s *HSet[K, V]) Diff(set HSet[K, V]) HSet[K, V] {
   res := NewHSet(s.Length(), s.valKey)
   for _, val := range s.Entries() {
-    if _, exist := set.Get(val); !exist {
+    if !set.Get(val) {
       res.Set(val)
     }
   }

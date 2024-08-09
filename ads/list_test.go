@@ -158,7 +158,7 @@ func TestDListInsert(t *testing.T) {
   for _, c := range cases {
     var lst ads.DList[int]
     lst.PushHead(c.vals...)
-    var nd *ads.LNode[int]
+    var nd *ads.Node[int]
     for _, nd = range lst.Backward() {
       if nd.Value() == c.ndVal {
         break
@@ -187,7 +187,7 @@ func TestDListDelete(t *testing.T) {
   for _, c := range cases {
     var lst ads.DList[int]
     lst.PushHead(c.vals...)
-    var nd *ads.LNode[int]
+    var nd *ads.Node[int]
     for _, nd = range lst.Backward() {
       if nd.Value() == c.ndVal {
         break

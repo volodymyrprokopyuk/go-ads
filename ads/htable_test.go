@@ -81,24 +81,20 @@ func TestHSetSetGetDelete(t *testing.T) {
     }
   }
   exp := 1
-  got, _ := set.Get(1)
-  if got != exp {
-    t.Errorf("invalid get: expected %v, got %v", exp, got)
+  if !set.Get(exp) {
+    t.Errorf("invalid get: %v is not in set", exp)
   }
-  val := 9
-  _ , exist := set.Get(val)
-  if exist {
-    t.Errorf("exist non-existing val %v", val)
+  exp = 9
+  if set.Get(exp) {
+    t.Errorf("invalid get: %v is in set", exp)
   }
   exp = 1
-  got, _ = set.Delete(1)
-  if got != exp {
-    t.Errorf("invalid delete: expected %v, got %v", exp, got)
+  if !set.Delete(exp) {
+    t.Errorf("invalid delete: %v is not in set", exp)
   }
-  val = 9
-  _ , deleted := set.Delete(val)
-  if deleted {
-    t.Errorf("deleted non-existing val %v", val)
+  exp = 9
+  if set.Delete(exp) {
+    t.Errorf("invalid delete: %v is in set", exp)
   }
   gotLength, expLength = set.Length(), 1
   if gotLength != expLength {
@@ -138,11 +134,11 @@ func TestHSetSubsetUnionIntersectDiff(t *testing.T) {
   if a.Subset(b) {
     t.Errorf("invalid subset: false positive")
   }
-  _, _ = a.Delete(1)
+  a.Delete(1)
   if !a.Subset(b) {
     t.Errorf("invalid subset: false negative")
   }
-  _, _ = b.Delete(4)
+  b.Delete(4)
   if !a.Equal(b) {
     t.Errorf("invalid equal")
   }

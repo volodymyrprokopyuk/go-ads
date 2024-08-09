@@ -2,31 +2,34 @@ package ads
 
 import "fmt"
 
-type LNode[T any] struct {
-  value T
-  next, prev *LNode[T]
+type Node[V any] struct {
+  value V
+  next, prev *Node[V] // list
+  left, right *Node[V] // tree
 }
 
-func (n *LNode[T]) Value() T {
+func (n *Node[V]) Value() V {
   return n.value
 }
 
-func (n *LNode[T]) SetValue(val T) {
+func (n *Node[V]) SetValue(val V) {
   n.value = val
 }
 
-type List[T any] struct {
-  head *LNode[T]
+type nodeIter[V any] func(yield func(i int, nd *Node[V]) bool)
+
+type List[V any] struct {
+  head *Node[V]
   length int
 }
 
-func (l *List[T]) Length() int {
+func (l *List[V]) Length() int {
   return l.length
 }
 
-func (l *List[T]) Backward() func(yield func(i int, nd *LNode[T]) bool) {
+func (l *List[V]) Backward() nodeIter[V] {
   i, nd := 0, l.head
-  return func(yield func(i int, nd *LNode[T]) bool) {
+  return func(yield func(i int, nd *Node[V]) bool) {
     for nd != nil && yield(i, nd) {
       nd = nd.next
       i++
@@ -35,9 +38,9 @@ func (l *List[T]) Backward() func(yield func(i int, nd *LNode[T]) bool) {
 }
 
 // O(1)
-func (l *List[T]) Push(vals ...T) {
+func (l *List[V]) Push(vals ...V) {
   for _, val := range vals {
-    nd := &LNode[T]{value: val}
+    nd := &Node[V]{value: val}
     nd.next = l.head
     l.head = nd
     l.length++
@@ -45,8 +48,8 @@ func (l *List[T]) Push(vals ...T) {
 }
 
 // O(1)
-func (l *List[T]) Peek() (T, error) {
-  var val T
+func (l *List[V]) Peek() (V, error) {
+  var val V
   if l.head == nil {
     return val, fmt.Errorf("peek from empty list")
   }
@@ -54,8 +57,8 @@ func (l *List[T]) Peek() (T, error) {
 }
 
 // O(1)
-func (l *List[T]) Pop() (T, error) {
-  var val T
+func (l *List[V]) Pop() (V, error) {
+  var val V
   if l.head == nil {
     return val, fmt.Errorf("pop from empty list")
   }
@@ -66,8 +69,8 @@ func (l *List[T]) Pop() (T, error) {
 }
 
 // O(n)
-func (l *List[T]) Reverse() {
-  var prev, next *LNode[T]
+func (l *List[V]) Reverse() {
+  var prev, next *Node[V]
   nd := l.head
   for nd != nil {
     next = nd.next // advance
@@ -78,18 +81,18 @@ func (l *List[T]) Reverse() {
   l.head = prev
 }
 
-type DList[T any] struct {
-  head, tail *LNode[T]
+type DList[V any] struct {
+  head, tail *Node[V]
   length int
 }
 
-func (l *DList[T]) Length() int {
+func (l *DList[V]) Length() int {
   return l.length
 }
 
-func (l *DList[T]) Backward() func(yield func(i int, nd *LNode[T]) bool) {
+func (l *DList[V]) Backward() nodeIter[V] {
   i, nd := 0, l.head
-  return func(yield func(i int, nd *LNode[T]) bool) {
+  return func(yield func(i int, nd *Node[V]) bool) {
     for nd != nil && yield(i, nd) {
       nd = nd.next
       i++
@@ -97,9 +100,9 @@ func (l *DList[T]) Backward() func(yield func(i int, nd *LNode[T]) bool) {
   }
 }
 
-func (l *DList[T]) Forward() func(yield func(i int, nd *LNode[T]) bool) {
+func (l *DList[V]) Forward() nodeIter[V] {
   i, nd := 0, l.tail
-  return func(yield func(i int, nd *LNode[T]) bool) {
+  return func(yield func(i int, nd *Node[V]) bool) {
     for nd != nil && yield(i, nd) {
       nd = nd.prev
       i++
@@ -108,9 +111,9 @@ func (l *DList[T]) Forward() func(yield func(i int, nd *LNode[T]) bool) {
 }
 
 // O(1)
-func (l *DList[T]) PushHead(vals ...T) {
+func (l *DList[V]) PushHead(vals ...V) {
   for _, val := range vals {
-    nd := &LNode[T]{value: val}
+    nd := &Node[V]{value: val}
     l.length++
     if l.head == nil {
       l.head, l.tail = nd, nd
@@ -123,9 +126,9 @@ func (l *DList[T]) PushHead(vals ...T) {
 }
 
 // O(1)
-func (l *DList[T]) PushTail(vals ...T) {
+func (l *DList[V]) PushTail(vals ...V) {
   for _, val := range vals {
-    nd := &LNode[T]{value: val}
+    nd := &Node[V]{value: val}
     l.length++
     if l.tail == nil {
       l.head, l.tail = nd, nd
@@ -138,8 +141,8 @@ func (l *DList[T]) PushTail(vals ...T) {
 }
 
 // O(1)
-func (l *DList[T]) PeekHead() (T, error) {
-  var val T
+func (l *DList[V]) PeekHead() (V, error) {
+  var val V
   if l.head == nil {
     return val, fmt.Errorf("peek head from empty dlist")
   }
@@ -147,8 +150,8 @@ func (l *DList[T]) PeekHead() (T, error) {
 }
 
 // O(1)
-func (l *DList[T]) PeekTail() (T, error) {
-  var val T
+func (l *DList[V]) PeekTail() (V, error) {
+  var val V
   if l.tail == nil {
     return val, fmt.Errorf("peek tail from empty dlist")
   }
@@ -156,8 +159,8 @@ func (l *DList[T]) PeekTail() (T, error) {
 }
 
 // O(1)
-func (l *DList[T]) PopHead() (T, error) {
-  var val T
+func (l *DList[V]) PopHead() (V, error) {
+  var val V
   if l.head == nil {
     return val, fmt.Errorf("pop head from empty dlist")
   }
@@ -173,8 +176,8 @@ func (l *DList[T]) PopHead() (T, error) {
 }
 
 // O(1)
-func (l *DList[T]) PopTail() (T, error) {
-  var val T
+func (l *DList[V]) PopTail() (V, error) {
+  var val V
   if l.tail == nil {
     return val, fmt.Errorf("pop tail from empty dlist")
   }
@@ -190,8 +193,8 @@ func (l *DList[T]) PopTail() (T, error) {
 }
 
 // O(1)
-func (l *DList[T]) Insert(val T, after *LNode[T]) {
-  nd := &LNode[T]{value: val}
+func (l *DList[V]) Insert(val V, after *Node[V]) {
+  nd := &Node[V]{value: val}
   l.length++
   if after == l.tail {
     nd.prev = after
@@ -206,7 +209,7 @@ func (l *DList[T]) Insert(val T, after *LNode[T]) {
 }
 
 // O(1)
-func (l *DList[T]) Delete(nd *LNode[T]) {
+func (l *DList[V]) Delete(nd *Node[V]) {
   l.length--
   if nd == l.head && l.head == l.tail {
     l.head, l.tail = nil, nil

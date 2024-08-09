@@ -1,24 +1,24 @@
 package ads
 
-type Stack[T any] struct {
-  lst List[T]
+type Stack[V any] struct {
+  lst List[V]
 }
 
-func (s *Stack[T]) Length() int {
+func (s *Stack[V]) Length() int {
   return s.lst.Length()
 }
 
 // O(1)
-func (s *Stack[T]) Push(vals ...T) {
+func (s *Stack[V]) Push(vals ...V) {
   s.lst.Push(vals...)
 }
 
 // O(1)
-func (s *Stack[T]) Peek() (T, error) {
+func (s *Stack[V]) Peek() (V, error) {
   return s.lst.Peek()
 }
 
 // O(1)
-func (s *Stack[T]) Pop() (T, error) {
+func (s *Stack[V]) Pop() (V, error) {
   return s.lst.Pop()
 }

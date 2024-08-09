@@ -1,18 +1,5 @@
 package ads
 
-type Node[V any] struct {
-  value V
-  left, right *Node[V]
-}
-
-func (n *Node[V]) Value() V {
-  return n.value
-}
-
-func (n *Node[V]) SetValue(val V) {
-  n.value = val
-}
-
 type BSTree[K, V any] struct {
   root *Node[V]
   valKey func(val V) K
@@ -25,8 +12,8 @@ func NewBSTree[K, V any](
   return BSTree[K, V]{valKey: valKey, keyOrd: keyOrd}
 }
 
-// sort order
-func (t *BSTree[K, V]) InOrder() func(yield func(i int, nd *Node[V]) bool) {
+// sort order, infix notation a+b
+func (t *BSTree[K, V]) InOrder() nodeIter[V] {
   i, more := 0, true
   return  func(yield func(i int, nd *Node[V]) bool) {
     var inOrder func(nd *Node[V])
@@ -45,8 +32,8 @@ func (t *BSTree[K, V]) InOrder() func(yield func(i int, nd *Node[V]) bool) {
   }
 }
 
-// depth-first search DFS, prefix notation
-func (t *BSTree[K, V]) PreOrder() func(yield func(i int, nd *Node[V]) bool) {
+// depth-first search DFS, prefix notation +ab
+func (t *BSTree[K, V]) PreOrder() nodeIter[V] {
   i, more := 0, true
   return func(yield func(i int, nd *Node[V]) bool) {
     var preOrder func(nd *Node[V])
@@ -65,8 +52,8 @@ func (t *BSTree[K, V]) PreOrder() func(yield func(i int, nd *Node[V]) bool) {
   }
 }
 
-// postfix notation
-func (t *BSTree[K, V]) PostOrder() func(yield func(i int, nd *Node[V]) bool) {
+// postfix notation ab+
+func (t *BSTree[K, V]) PostOrder() nodeIter[V] {
   i, more := 0, true
   return func(yield func(i int, nd *Node[V]) bool) {
     var postOrder func(nd *Node[V])
@@ -86,7 +73,7 @@ func (t *BSTree[K, V]) PostOrder() func(yield func(i int, nd *Node[V]) bool) {
 }
 
 // breadth-first search BFS
-func (t *BSTree[K, V]) LevelOrder() func(yield func(i int, nd *Node[V]) bool) {
+func (t *BSTree[K, V]) LevelOrder() nodeIter[V] {
   return func(yield func(i int, nd *Node[V]) bool) {
     i := 0
     var que Queue[*Node[V]]
@@ -104,28 +91,31 @@ func (t *BSTree[K, V]) LevelOrder() func(yield func(i int, nd *Node[V]) bool) {
   }
 }
 
-func (t *BSTree[K, V]) Set(val V) {
-  key := t.valKey(val)
-  // recursive function expression requires variable declaration
-  var set func(nd *Node[V]) *Node[V]
-  set = func(nd *Node[V]) *Node[V] {
+// O(log(n))
+func (t *BSTree[K, V]) Set(vals ...V) {
+  var set func(nd *Node[V], val V) *Node[V]
+  set = func(nd *Node[V], val V) *Node[V] {
+    key := t.valKey(val)
     if nd == nil {
       return &Node[V]{value: val}
     }
     ndKey := t.valKey(nd.value)
     switch { // binary search
     case t.keyOrd(key, ndKey):
-      nd.left = set(nd.left)
+      nd.left = set(nd.left, val)
     case t.keyOrd(ndKey, key):
-      nd.right = set(nd.right)
+      nd.right = set(nd.right, val)
     default:
       nd.value = val // update the node value for an existing key
     }
     return nd
   }
-  t.root = set(t.root)
+  for _, val := range vals {
+    t.root = set(t.root, val)
+  }
 }
 
+// O(log(n))
 func (t *BSTree[K, V]) Get(val V) (*Node[V], bool) {
   key := t.valKey(val)
   var get func (nd *Node[V]) (*Node[V], bool)
@@ -144,4 +134,71 @@ func (t *BSTree[K, V]) Get(val V) (*Node[V], bool) {
     }
   }
   return get(t.root)
+}
+
+// O(log(n))
+func (t *BSTree[K, V]) Delete(val V) bool {
+  inOrderSucc := func(nd *Node[V]) *Node[V] {
+    for nd.left != nil {
+      nd = nd.left
+    }
+    return nd
+  }
+  var del func(nd *Node[V], val V) (*Node[V], bool)
+  del = func(nd *Node[V], val V) (*Node[V], bool) {
+    key := t.valKey(val)
+    if nd == nil {
+      return nil, false // the value is not found
+    }
+    var deleted bool
+    ndKey := t.valKey(nd.value)
+    switch { // binary search
+    case t.keyOrd(key, ndKey):
+      nd.left, deleted = del(nd.left, val)
+    case t.keyOrd(ndKey, key):
+      nd.right, deleted = del(nd.right, val)
+    default: // the value is found
+      if nd.left == nil && nd.right == nil {
+        return nil, true // delete a leaf node
+      }
+      // one=child node: return the other child
+      if nd.left == nil {
+        return nd.right, true
+      }
+      if nd.right == nil {
+        return nd.left, true
+      }
+      // two-children node
+      succ := inOrderSucc(nd.right)
+      nd.value = succ.value
+      // delete the in-order successor
+      nd.right, deleted = del(nd.right, succ.value)
+    }
+    return nd, deleted
+  }
+  var deleted bool
+  t.root, deleted = del(t.root, val)
+  return deleted
+}
+
+// O(log(n))
+func (t *BSTree[K, V]) Min() *Node[V] {
+  nd := t.root
+  if nd != nil {
+    for nd.left != nil {
+      nd = nd.left
+    }
+  }
+  return nd
+}
+
+// O(log(n))
+func (t *BSTree[K, V]) Max() *Node[V] {
+  nd := t.root
+  if nd != nil {
+    for nd.right != nil {
+      nd = nd.right
+    }
+  }
+  return nd
 }
