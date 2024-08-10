@@ -6,12 +6,21 @@ import (
 	"github.com/volodymyrprokopyuk/go-ads/ads"
 )
 
+var heapSlice = []int{6, 3, 1, 2, 9, 0, 5, 4, 7, 8, 0}
+
 func main() {
-  var tree = ads.NewBSTree[int, int](
-    func(val int) int { return val },
+  var heap = ads.NewHeap[int, int](
+    11, func(val int) int { return val },
     func(a, b int) bool { return a < b },
   )
-  tree.Set([]int{8, 1, 3, 2, 6, 0, 5, 4, 7, 9}...)
+  heap.Push(heapSlice...)
+
+  // fmt.Println(heap.Peek())
+  // fmt.Println(heap.Length())
+
+  for heap.Length() > 0 {
+    fmt.Println(heap.Pop())
+  }
 
   // fmt.Println(tree.Delete(6))
 
