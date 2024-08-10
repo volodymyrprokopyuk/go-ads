@@ -112,6 +112,29 @@ func MergeSort[T any](slc []T, ord func(a, b T) bool) []T {
   return merge(MergeSort(slc[:m], ord), MergeSort(slc[m:], ord), ord)
 }
 
+// O(n*log(n)), copy, non-stable, no duplicates, O(n^2) on sorted array
+func BSTSort[T any](slc []T, ord func(a, b T) bool) []T {
+  tree := NewBSTree(func(val T) T { return val }, ord)
+  tree.Set(slc...)
+  res := make([]T, 0, len(slc))
+  for _, nd := range tree.InOrder() {
+    res = append(res, nd.Value())
+  }
+  return res
+}
+
+// O(n*log(n)), copy, non-stable
+func HeapSort[T any](slc []T, ord func(a, b T) bool) []T {
+  heap := NewHeap(len(slc), func(val T) T { return val }, ord)
+  heap.Push(slc...)
+  res := make([]T, 0, len(slc))
+  for heap.Length() > 0 {
+    val, _ := heap.Pop()
+    res = append(res, val)
+  }
+  return res
+}
+
 // O(log(n)), binary search of an ordered slice
 func BinarySearch[T any](slc []T, val T, cmp func(a, b T) int) int {
   a, b := 0, len(slc)

@@ -83,9 +83,14 @@ func TestCopySort(t *testing.T) {
     sort func(slc []int, ord func(a, b int) bool) []int
   }{
     {"merge sort", ads.MergeSort[int]},
+    {"BSTree sort", ads.BSTSort[int]},
+    {"Heap sort", ads.HeapSort[int]},
   }
   for _, s := range sorts {
     for _, c := range cases() {
+      if s.name == "BSTree sort" && c.name == "duplicate elements" {
+        continue // BSTree sort does not allow duplicate elements
+      }
       got := s.sort(c.slc, lt)
       if !SliceEqual(got, c.exp) {
         t.Errorf("%v: %v: expected %v, got %v", s.name, c.name, c.exp, got)
