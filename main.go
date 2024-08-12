@@ -4,9 +4,18 @@ import (
 	"github.com/volodymyrprokopyuk/go-ads/cc"
 )
 
-
-func main() {
+func concurrency() {
   // * mutex
   // cc.MtxCounter()
-  cc.RRWMutexPrefersReaders()
+  // cc.RRWMutexPrefersReaders()
+  // cc.RWWMutexPrefersWriters()
+
+  // * condition
+  // cc.CndBalance()
+  cc.CndAllJoined()
+}
+
+
+func main() {
+  concurrency()
 }

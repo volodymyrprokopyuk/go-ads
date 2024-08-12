@@ -1,1 +1,3 @@
 * Algorithms and data structures in Go
+
+* Concurrency primitives and design patterns
