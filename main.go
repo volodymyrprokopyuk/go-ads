@@ -6,5 +6,7 @@ import (
 
 
 func main() {
-  cc.MtxCounter()
+  // * mutex
+  // cc.MtxCounter()
+  cc.RRWMutexPrefersReaders()
 }
