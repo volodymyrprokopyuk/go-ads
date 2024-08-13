@@ -12,7 +12,16 @@ func concurrency() {
 
   // * condition
   // cc.CndBalance()
-  cc.CndAllJoined()
+  // cc.CndAllJoined()
+
+  // * semaphore
+  // cc.SemConcurrencyLimit()
+
+  // * wait group
+  // cc.WGAllDone()
+
+  // * barrier
+  cc.BarSyncRounds()
 }
 
 
