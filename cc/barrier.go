@@ -35,9 +35,9 @@ func BarSyncRounds() {
     defer wg.Done()
     for j := range 2 {
       time.Sleep(1000 * time.Millisecond)
+      bar.Wait()
       // round 0: n done ...; round 1: n done ...
       fmt.Printf("round %v: %v done\n", j, i)
-      bar.Wait()
     }
   }
   for i := range n {

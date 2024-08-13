@@ -21,7 +21,10 @@ func concurrency() {
   // cc.WGAllDone()
 
   // * barrier
-  cc.BarSyncRounds()
+  // cc.BarSyncRounds()
+
+  // * channel
+  cc.ChSyncAsyncPipe()
 }
 
 
