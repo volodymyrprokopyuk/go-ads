@@ -64,3 +64,86 @@ func ChSyncAsyncPipe() {
   // async channel: send 0, 1, 2; recv 0, 1, 2
   wg.Wait()
 }
+
+func ChEarlyExist() {
+  ch, stop := make(chan int), make(chan struct{})
+  var wg sync.WaitGroup
+  task := func(i int) {
+    defer wg.Done()
+    for {
+      select {
+      case <- stop:
+        fmt.Printf("%v: stop\n", i)
+        return
+      case val, open := <- ch:
+        if !open {
+          fmt.Printf("%v: done\n", i)
+          return
+        }
+        time.Sleep(800 * time.Millisecond)
+        fmt.Printf("%v: %v\n", i, val)
+      }
+    }
+  }
+  for i := range 3 {
+    wg.Add(1)
+    go task(i)
+  }
+  for val := range 10 {
+    ch <- val
+    if val == 7 {
+      close(stop) // signal early exit
+      break
+    }
+  }
+  close(ch)
+  wg.Wait()
+}
+
+func ChFanOutFanIn() {
+  n := 3
+  src := make(chan int) // src => fan out => n pipes => fan in => sink
+  task := func() <-chan int {
+    res := make(chan int)
+    go func() {
+      defer close(res)
+      for val := range src { // process workload item
+        time.Sleep(800 * time.Millisecond)
+        res <- val * 10
+      }
+    }()
+    return res
+  }
+  fanIn := func(pipes []<-chan int) <-chan int {
+    res := make(chan int)
+    var wg sync.WaitGroup
+    for _, pipe := range pipes {
+      wg.Add(1)
+      go func() { // combine workload results from each pipe
+        defer wg.Done()
+        for val := range pipe {
+          res <- val
+        }
+      }()
+    }
+    go func() {
+      wg.Wait()
+      close(res)
+    }()
+    return res
+  }
+  pipes := make([]<-chan int, n)
+  for i := range n { // fan out, distribute source workload
+    pipes[i] = task()
+  }
+  sink := fanIn(pipes) // fan in, combine workload results
+  go func() {
+    for val := range 10 { // generate source workload
+      src <- val
+    }
+    close(src)
+  }()
+  for val := range sink { // collect workload results
+    fmt.Println(val)
+  }
+}

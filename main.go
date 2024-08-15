@@ -24,7 +24,9 @@ func concurrency() {
   // cc.BarSyncRounds()
 
   // * channel
-  cc.ChSyncAsyncPipe()
+  // cc.ChSyncAsyncPipe()
+  // cc.ChEarlyExist()
+  cc.ChFanOutFanIn()
 }
 
 
