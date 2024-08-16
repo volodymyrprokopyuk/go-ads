@@ -102,6 +102,7 @@ func ChEarlyExist() {
 
 func ChFanOutFanIn() {
   n := 3
+  // each value is sent to only one channel
   src := make(chan int) // src => fan out => n pipes => fan in => sink
   task := func() <-chan int {
     res := make(chan int)
@@ -146,4 +147,46 @@ func ChFanOutFanIn() {
   for val := range sink { // collect workload results
     fmt.Println(val)
   }
+}
+
+func ChBroadcast() {
+  var wg sync.WaitGroup
+  task := func(i int, src <-chan int) {
+    defer wg.Done()
+    for val := range src {
+      time.Sleep(800 * time.Millisecond)
+      fmt.Printf("%v: %v\n", i, val)
+    }
+  }
+  broadcast := func(src <-chan int, n int) []chan int {
+    pipes := make([]chan int, n)
+    for i := range n { // create broadcast pipes
+      pipes[i] = make(chan int)
+    }
+    go func() {
+      defer func() {
+        for _, pipe := range pipes { // close broadcast pipes
+          close(pipe)
+        }
+      }()
+      for val := range src {
+        for _, pipe := range pipes { // sequential broadcast
+          pipe <- val
+        }
+      }
+    }()
+    return pipes
+  }
+  // each value is sent to all channels
+  src := make(chan int) // src => broadcast => n pipes
+  pipes := broadcast(src, 3)
+  for i, pipe := range pipes { // start broadcast processing
+    wg.Add(1)
+    go task(i, pipe)
+  }
+  for val := range 4 { // generate source workload
+    src <- val
+  }
+  close(src)
+  wg.Wait()
 }
