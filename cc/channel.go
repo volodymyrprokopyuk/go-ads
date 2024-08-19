@@ -190,3 +190,58 @@ func ChBroadcast() {
   close(src)
   wg.Wait()
 }
+
+func ChPipeline() {
+  pipe := func(src <-chan int, fun func(val int) int) <-chan int {
+    res := make(chan int)
+    go func() {
+      defer close(res)
+      for val := range src {
+        time.Sleep(800 * time.Millisecond)
+        res <- fun(val)
+      }
+    }()
+    return res
+  }
+  src := make(chan int) // build a pipeline of goroutines
+  inc := pipe(src, func(val int) int { return val + 1 })
+  mul := pipe(inc, func(val int) int {return val * 10 })
+  go func() {
+    defer close(src)
+    for i := range 5 { // generate source workload
+      src <- i
+    }
+  }()
+  for val := range mul { // collect pipeline results
+    fmt.Println(val)
+  }
+}
+
+func ChErrorHandling() {
+  type result struct {
+    err error
+    res int
+  }
+  task := func(slc []int) <-chan result {
+    res := make(chan result)
+    go func() {
+      defer close(res)
+      for _, val := range slc {
+        if val < 0 {
+          res <- result{fmt.Errorf("oh"), 0}
+          continue
+        }
+        res <- result{nil, val}
+      }
+    }()
+    return res
+  }
+  res := task([]int{1, 2, -1, 3, -2})
+  for val := range res {
+    if val.err != nil {
+      fmt.Println(val.err)
+      continue
+    }
+    fmt.Println(val.res) // 1, 2, oh, 3, oh
+  }
+}

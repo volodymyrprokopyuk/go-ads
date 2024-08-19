@@ -28,7 +28,12 @@ func concurrency() {
   // cc.ChSyncAsyncPipe()
   // cc.ChEarlyExist()
   // cc.ChFanOutFanIn()
-  cc.ChBroadcast()
+  // cc.ChBroadcast()
+  // cc.ChPipeline()
+  cc.ChErrorHandling()
+
+  // * context
+  // cc.CtxCancelTimeout()
 }
 
 func ccProblem() {
