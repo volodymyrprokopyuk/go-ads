@@ -245,3 +245,104 @@ func ChErrorHandling() {
     fmt.Println(val.res) // 1, 2, oh, 3, oh
   }
 }
+
+func ChTee() {
+  tee := func(src <-chan int) (<-chan int, <-chan int) {
+    res1, res2 := make(chan int), make(chan int)
+    go func() {
+      defer close(res1)
+      defer close(res2)
+      for val := range src {
+        // per iteration channel copies to assign nil
+        r1, r2 := res1, res2
+        for range 2 {
+          select {
+          case r1 <- val:
+            r1 = nil // blocks forever, lets send val to r2
+          case r2 <- val:
+            r2 = nil // blocks forever, lets send val to r1
+          }
+        }
+      }
+    }()
+    return res1, res2
+  }
+  var wg sync.WaitGroup
+  task := func(i int, src <-chan int) {
+    defer wg.Done()
+    for val := range src {
+      time.Sleep(800 * time.Millisecond)
+      fmt.Printf("%v: %v\n", i, val)
+    }
+  }
+  src := make(chan int)
+  res1, res2 := tee(src)
+  wg.Add(2)
+  go task(0, res1)
+  go task(1, res2)
+  for val := range 3 {
+    src <- val
+  }
+  close(src)
+  wg.Wait()
+}
+
+func ChHeartbeat() {
+  var wg sync.WaitGroup
+  task := func(src <-chan int) (<-chan int, <-chan struct{}) {
+    res, beat := make(chan int), make(chan struct{})
+    tick := time.NewTicker(100 * time.Millisecond)
+    go func() {
+      defer wg.Done()
+      defer close(res)
+      defer close(beat)
+      defer tick.Stop()
+      for {
+        select {
+        case <- tick.C:
+          select {
+          case beat <- struct{}{}: // send heartbeat
+          // default: // do not block if heartbeat is not read
+          }
+        case val, open := <- src:
+          if !open {
+            return
+          }
+          time.Sleep(200 * time.Millisecond)
+          res <- val // processing
+        }
+      }
+    }()
+    return res, beat
+  }
+  watch := func(src <-chan int, beat <-chan struct{}) {
+    defer wg.Done()
+    timeout := 300 * time.Millisecond
+    timer := time.NewTimer(timeout)
+    defer timer.Stop()
+    for {
+      timer.Reset(timeout)
+      select {
+      case <- timer.C:
+        fmt.Println("timeout")
+      case <- beat:
+        fmt.Println("heartbeat")
+      case val, open := <- src:
+        if !open {
+          return
+        }
+        fmt.Println(val)
+      }
+    }
+  }
+  src := make(chan int)
+  wg.Add(1)
+  res, beat := task(src)
+  wg.Add(1)
+  go watch(res, beat)
+  for val := range 5 {
+    src <- val
+  }
+  close(src)
+  wg.Wait()
+}

@@ -30,7 +30,9 @@ func concurrency() {
   // cc.ChFanOutFanIn()
   // cc.ChBroadcast()
   // cc.ChPipeline()
-  cc.ChErrorHandling()
+  // cc.ChErrorHandling()
+  // cc.ChTee()
+  cc.ChHeartbeat()
 
   // * context
   // cc.CtxCancelTimeout()
