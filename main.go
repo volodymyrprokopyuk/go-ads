@@ -32,10 +32,13 @@ func concurrency() {
   // cc.ChPipeline()
   // cc.ChErrorHandling()
   // cc.ChTee()
-  cc.ChHeartbeat()
+  cc.ChMerge()
+  // cc.ChHeartbeat()
+  // cc.ChAsyncRateLimiter()
 
   // * context
   // cc.CtxCancelTimeout()
+  // cc.CtxGracefulTermination()
 }
 
 func ccProblem() {

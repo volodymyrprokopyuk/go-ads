@@ -287,6 +287,50 @@ func ChTee() {
   wg.Wait()
 }
 
+func ChMerge() {
+  merge := func(src1 <-chan int, src2 <-chan int) <-chan int {
+    mrg := make(chan int)
+    go func() {
+      defer close(mrg)
+      for src1 != nil || src2 != nil {
+        select {
+        case val, open := <- src1:
+          if !open {
+            src1 = nil // block forever, remove this case from select
+            break
+          }
+          time.Sleep(800 * time.Millisecond)
+          mrg <- val
+        case val, open := <- src2:
+          if !open {
+            src2 = nil // block forever, remove this case from select
+            break
+          }
+          time.Sleep(800 * time.Millisecond)
+          mrg <- val
+        }
+      }
+    }()
+    return mrg
+  }
+  task := func(slc []int) <-chan int {
+    res := make(chan int)
+    go func() {
+      defer close(res)
+      for _, val := range slc {
+        res <- val
+      }
+    }()
+    return res
+  }
+  src1 := task([]int{1, 2, 3})
+  src2 := task([]int{10, 20, 30})
+  mrg := merge(src1, src2)
+  for val := range mrg {
+    fmt.Println(val)
+  }
+}
+
 func ChHeartbeat() {
   var wg sync.WaitGroup
   task := func(src <-chan int) (<-chan int, <-chan struct{}) {
@@ -344,5 +388,28 @@ func ChHeartbeat() {
     src <- val
   }
   close(src)
+  wg.Wait()
+}
+
+func ChAsyncRateLimiter() {
+  limit := 3
+  bucket := make(chan struct{}, limit) // buffered bucket
+  for range limit { // initial fill the bucket with limit tokens
+    bucket <- struct{}{}
+  }
+  var wg sync.WaitGroup
+  task := func(val int) {
+    defer wg.Done()
+    defer func() { // refill the bucket after processing a task
+      bucket <- struct{}{}
+    }()
+    <- bucket // take a rate limited token from the bucket
+    time.Sleep(800 * time.Millisecond)
+    fmt.Println(val)
+  }
+  for val := range 10 {
+    wg.Add(1)
+    go task(val)
+  }
   wg.Wait()
 }
