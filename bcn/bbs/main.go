@@ -78,7 +78,7 @@ func txAddCmd() *cobra.Command {
       if err != nil {
         return err
       }
-      fmt.Printf("Add TX %v: success", tx)
+      fmt.Printf("Add TX %v: success\n", tx)
       return nil
     },
   }

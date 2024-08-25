@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"maps"
 	"os"
+	"path/filepath"
 	"slices"
 )
 
@@ -15,13 +16,15 @@ type State struct {
   dbFile *os.File
 }
 
-// Loads state of TXs from initial genesis.json and historical tx.db
+// Loads the state of TXs from the initial genesis.json and the historical tx.db
 func LoadState() (*State, error) {
-  gen, err := loadGenesis("genesis.json")
+  path := filepath.Join("db", "genesis.json")
+  gen, err := loadGenesis(path)
   if err != nil {
     return nil, err
   }
-  dbFile, err := os.OpenFile("tx.db", os.O_APPEND | os.O_RDWR, 600)
+  path = filepath.Join("db", "tx.db")
+  dbFile, err := os.OpenFile(path, os.O_APPEND | os.O_RDWR, 600)
   if err != nil {
     return nil, err
   }
@@ -47,7 +50,7 @@ func LoadState() (*State, error) {
   return state, nil
 }
 
-// Adds a TX to the state and the memory pool
+// Adds a TX to the state balances and the memory pool
 func (s *State) Add(tx Tx) error {
   err := s.apply(tx)
   if err != nil {
@@ -59,7 +62,7 @@ func (s *State) Add(tx Tx) error {
 
 // Saves TXs from the memory pool to the DB file
 func (s *State) Save() error {
-  for tx := range slices.Clone(s.txMempool) {
+  for _, tx := range slices.Clone(s.txMempool) {
     txJson, err := json.Marshal(tx)
     if err != nil {
       return err
@@ -77,14 +80,14 @@ func (s *State) Close() {
   s.dbFile.Close()
 }
 
-// Applies a TX to the state
+// Validates a TX. Handles the reward. Transfers the TX value between balances
 func (s *State) apply(tx Tx) error {
   if tx.IsReward() {
     s.Balances[tx.To] += tx.Value
     return nil
   }
   if s.Balances[tx.From] < tx.Value {
-    return fmt.Errorf("account %v: insufficient funds", tx.From)
+    return fmt.Errorf("account %v: insufficient funds < %v", tx.From, tx.Value)
   }
   s.Balances[tx.From] -= tx.Value
   s.Balances[tx.To] += tx.Value
