@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/volodymyrprokopyuk/go-ads/bcn/bbs/db"
@@ -38,6 +39,7 @@ func balListCmd() *cobra.Command {
         return err
       }
       defer state.Close()
+      // fmt.Printf("DB snapshot: %x\n", state.Snapshot())
       for acc, bal := range state.Balances {
         fmt.Printf("%v: %v\n", acc, bal)
       }
@@ -74,11 +76,12 @@ func txAddCmd() *cobra.Command {
       if err != nil {
         return err
       }
-      err = state.Save()
+      snapshot, err := state.SaveSnapshot()
       if err != nil {
         return err
       }
       fmt.Printf("Add TX %v: success\n", tx)
+      fmt.Printf("DB snapshot: %x\n", snapshot)
       return nil
     },
   }
@@ -89,10 +92,60 @@ func txAddCmd() *cobra.Command {
   return cmd
 }
 
+func packTxsIntoBlocks() error {
+  state, err := db.LoadState()
+  if err != nil {
+    return err
+  }
+  defer state.Close()
+  blk0 := db.NewBlock(
+    db.Hash{},
+    uint64(time.Now().Unix()),
+    []db.Tx{
+      {"andrej", "andrej", 3, ""},
+      {"andrej", "andrej", 700, "reward"},
+    },
+  )
+  err = state.AddBlock(blk0)
+  if err != nil {
+    return err
+  }
+  err = state.Save()
+  if err != nil {
+    return err
+  }
+  blk1 := db.NewBlock(
+    state.LastBlockHash(),
+    uint64(time.Now().Unix()),
+    []db.Tx{
+      {"andrej", "babayaga", 2000, ""},
+      {"andrej", "andrej", 100, "reward"},
+      {"babayaga", "andrej", 1, ""},
+      {"babayaga", "caesar", 1000, ""},
+      {"babayaga", "andrej", 50, ""},
+      {"andrej", "andrej", 600, "reward"},
+    },
+  )
+  err = state.AddBlock(blk1)
+  if err != nil {
+    return err
+  }
+  err = state.Save()
+  if err != nil {
+    return err
+  }
+  return nil
+}
+
 func main() {
-  bbs := bbsCmd()
-  bbs.AddCommand(balCmd(), txCmd())
-  err := bbs.Execute()
+  err := packTxsIntoBlocks()
+
+  // bbs := bbsCmd()
+  // bbs.AddCommand(balCmd(), txCmd())
+  // err := bbs.Execute()
+
+  // err := node.Listen()
+
   if err != nil {
     fmt.Println(err)
     os.Exit(1)

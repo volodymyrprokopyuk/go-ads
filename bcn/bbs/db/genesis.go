@@ -10,12 +10,12 @@ type genesis struct {
 }
 
 func loadGenesis(path string) (genesis, error) {
-  cont, err := os.ReadFile(path)
+  genCont, err := os.ReadFile(path)
   if err != nil {
     return genesis{}, err
   }
   var gen genesis
-  err = json.Unmarshal(cont, &gen)
+  err = json.Unmarshal(genCont, &gen)
   if err != nil {
     return genesis{}, err
   }
