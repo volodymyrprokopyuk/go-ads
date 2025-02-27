@@ -26,13 +26,14 @@ func concurrency() {
 
   // * channel
   // cc.ChSyncAsyncPipe()
-  // cc.ChEarlyExist()
+  cc.ChMultiSendReceive()
+  // cc.ChEarlyExit()
   // cc.ChFanOutFanIn()
   // cc.ChBroadcast()
   // cc.ChPipeline()
   // cc.ChErrorHandling()
   // cc.ChTee()
-  cc.ChMerge()
+  // cc.ChMerge()
   // cc.ChHeartbeat()
   // cc.ChAsyncRateLimiter()
 

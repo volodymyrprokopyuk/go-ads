@@ -65,7 +65,35 @@ func ChSyncAsyncPipe() {
   wg.Wait()
 }
 
-func ChEarlyExist() {
+func ChMultiSendReceive() {
+  ch := make(chan int)
+  var swg sync.WaitGroup
+  send := func (n int) {
+    defer swg.Done()
+    for i := range 5 {
+      time.Sleep(5 * time.Millisecond)
+      ch <- (i + 1) * n
+    }
+  }
+  var rwg sync.WaitGroup
+  receive := func (name string) {
+    defer rwg.Done()
+    for i := range ch {
+      fmt.Printf("%s %d\n", name, i)
+    }
+  }
+  swg.Add(2)
+  go send(1)
+  go send(10)
+  rwg.Add(2)
+  go receive("a")
+  go receive("b")
+  swg.Wait()
+  close(ch)
+  rwg.Wait()
+}
+
+func ChEarlyExit() {
   ch, stop := make(chan int), make(chan struct{})
   var wg sync.WaitGroup
   task := func(i int) {
