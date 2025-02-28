@@ -441,3 +441,39 @@ func ChAsyncRateLimiter() {
   }
   wg.Wait()
 }
+
+type Pool[T any] chan T
+
+func NewPool[T any](slc []T) *Pool[T] {
+  pool := Pool[T](make(chan T, len(slc)))
+  for _, val := range slc {
+    pool <- val
+  }
+  return &pool
+}
+
+func (p *Pool[T]) acquire() T {
+  val := <- *p
+  return val
+}
+
+func (p *Pool[T]) release(val T) {
+  *p <- val
+}
+
+func ChPool() {
+  var wg sync.WaitGroup
+  pool := NewPool([]int{1, 2, 3})
+  task := func() {
+    defer wg.Done()
+    val := pool.acquire()
+    defer pool.release(val)
+    time.Sleep(900 * time.Millisecond)
+    fmt.Println(val)
+  }
+  for range 4 {
+    wg.Add(1)
+    go task()
+  }
+  wg.Wait()
+}

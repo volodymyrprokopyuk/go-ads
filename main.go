@@ -26,7 +26,7 @@ func concurrency() {
 
   // * channel
   // cc.ChSyncAsyncPipe()
-  cc.ChMultiSendReceive()
+  // cc.ChMultiSendReceive()
   // cc.ChEarlyExit()
   // cc.ChFanOutFanIn()
   // cc.ChBroadcast()
@@ -36,6 +36,7 @@ func concurrency() {
   // cc.ChMerge()
   // cc.ChHeartbeat()
   // cc.ChAsyncRateLimiter()
+  cc.ChPool()
 
   // * context
   // cc.CtxCancelTimeout()
