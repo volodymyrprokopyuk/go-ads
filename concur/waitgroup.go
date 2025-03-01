@@ -1,4 +1,4 @@
-package cc
+package concur
 
 import (
 	"fmt"
@@ -44,7 +44,7 @@ func WGAllDone() {
   task := func(i int) {
     defer wg.Done()
     time.Sleep(time.Duration(rand.Intn(100)) * time.Millisecond)
-    fmt.Printf("%v done\n", i)
+    fmt.Printf("%d done\n", i)
   }
   for i := range 5 {
     wg.Add(1)

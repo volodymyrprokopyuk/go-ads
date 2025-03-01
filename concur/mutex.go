@@ -1,4 +1,4 @@
-package cc
+package concur
 
 import (
 	"fmt"
@@ -183,14 +183,14 @@ func CndAllJoined() {
     cnd.L.Lock()
     defer cnd.L.Unlock()
     joined++
-    fmt.Printf("%v joined\n", i)
+    fmt.Printf("%d joined\n", i)
     if joined == n {
       cnd.Broadcast()
     }
     for joined < n {
       cnd.Wait()
     }
-    fmt.Printf("%v all joined\n", i)
+    fmt.Printf("%d all joined\n", i)
   }
   for i := range n {
     wg.Add(1)

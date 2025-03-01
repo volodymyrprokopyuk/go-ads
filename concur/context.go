@@ -1,4 +1,4 @@
-package cc
+package concur
 
 import (
 	"context"
@@ -60,7 +60,7 @@ func CtxGracefulTermination() {
       case <- ctx.Done(): // graceful termination
         for val := range src {
           time.Sleep(200 * time.Millisecond)
-          fmt.Printf("%v graceful\n", val)
+          fmt.Printf("%d graceful\n", val)
         }
         return
       case val, open := <- src: // normal processing

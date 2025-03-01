@@ -1,54 +1,59 @@
 package main
 
 import (
-	"github.com/volodymyrprokopyuk/go-ads/cc"
-	"github.com/volodymyrprokopyuk/go-ads/cc/prb"
+	"github.com/volodymyrprokopyuk/go-ads/concur"
+	"github.com/volodymyrprokopyuk/go-ads/pattern"
 )
 
-func concurrency() {
-  // * mutex
-  // cc.MtxCounter()
-  // cc.RRWMutexPrefersReaders()
-  // cc.RWWMutexPrefersWriters()
-
-  // * condition
-  // cc.CndBalance()
-  // cc.CndAllJoined()
-
-  // * semaphore
-  // cc.SemConcurrencyLimit()
-
-  // * wait group
-  // cc.WGAllDone()
-
-  // * barrier
-  // cc.BarSyncRounds()
-
-  // * channel
-  // cc.ChSyncAsyncPipe()
-  // cc.ChMultiSendReceive()
-  // cc.ChEarlyExit()
-  // cc.ChFanOutFanIn()
-  // cc.ChBroadcast()
-  // cc.ChPipeline()
-  // cc.ChErrorHandling()
-  // cc.ChTee()
-  // cc.ChMerge()
-  // cc.ChHeartbeat()
-  // cc.ChAsyncRateLimiter()
-  cc.ChPool()
-
-  // * context
-  // cc.CtxCancelTimeout()
-  // cc.CtxGracefulTermination()
+func patternTest() {
+  pattern.PatDecorator()
 }
 
-func ccProblem() {
-  prb.ChSieveOfEratosthenes()
+func concurTest() {
+  // * mutex
+  // concur.MtxCounter()
+  // concur.RRWMutexPrefersReaders()
+  // concur.RWWMutexPrefersWriters()
+
+  // * condition
+  // concur.CndBalance()
+  // concur.CndAllJoined()
+
+  // * semaphore
+  concur.SemConcurrencyLimit()
+
+  // * wait group
+  // concur.WGAllDone()
+
+  // * barrier
+  // concur.BarSyncRounds()
+
+  // * channel
+  // concur.ChSyncAsyncPipe()
+  // concur.ChMultiSendReceive()
+  // concur.ChEarlyExit()
+  // concur.ChFanOutFanIn()
+  // concur.ChBroadcast()
+  // concur.ChPipeline()
+  // concur.ChErrorHandling()
+  // concur.ChTee()
+  // concur.ChMerge()
+  // concur.ChHeartbeat()
+  // concur.ChAsyncRateLimiter()
+  // concur.ChPool()
+
+  // * context
+  // concur.CtxCancelTimeout()
+  // concur.CtxGracefulTermination()
+}
+
+func concurProblem() {
+  concur.ChSieveOfEratosthenes()
 }
 
 
 func main() {
-  concurrency()
-  // ccProblem()
+  // patternTest()
+  concurTest()
+  // concurProblem()
 }

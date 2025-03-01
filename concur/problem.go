@@ -1,4 +1,4 @@
-package prb
+package concur
 
 import "fmt"
 
@@ -27,13 +27,13 @@ func ChSieveOfEratosthenes() {
   }
   in := seq(100)
   out := sieve(in, 2)
-  fmt.Printf("%v ", 2)
+  fmt.Printf("%d ", 2)
   for {
     prime, open := <- out
     if !open {
       break
     }
-    fmt.Printf("%v ", prime)
+    fmt.Printf("%d ", prime)
     out = sieve(out, prime)
   }
   fmt.Println()

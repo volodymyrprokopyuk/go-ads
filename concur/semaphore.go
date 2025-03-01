@@ -1,4 +1,4 @@
-package cc
+package concur
 
 import (
 	"fmt"
@@ -41,7 +41,7 @@ func SemConcurrencyLimit() {
     sem.Acquire()
     defer sem.Release()
     time.Sleep(1000 * time.Millisecond)
-    fmt.Printf("%v done\n", i) // at most 3 tasks every second
+    fmt.Printf("%d done\n", i) // at most 3 tasks every second
   }
   for i := range 10 {
     wg.Add(1)

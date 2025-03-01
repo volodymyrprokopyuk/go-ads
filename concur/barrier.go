@@ -1,4 +1,4 @@
-package cc
+package concur
 
 import (
 	"fmt"
@@ -37,7 +37,7 @@ func BarSyncRounds() {
       time.Sleep(1000 * time.Millisecond)
       bar.Wait()
       // round 0: n done ...; round 1: n done ...
-      fmt.Printf("round %v: %v done\n", j, i)
+      fmt.Printf("round %d: %d done\n", j, i)
     }
   }
   for i := range n {

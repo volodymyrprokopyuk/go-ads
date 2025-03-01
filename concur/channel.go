@@ -1,4 +1,4 @@
-package cc
+package concur
 
 import (
 	"fmt"
@@ -50,7 +50,7 @@ func ChSyncAsyncPipe() {
     for {
       time.Sleep(1000 * time.Millisecond)
       val := ch.Recv() // enable sending capacity
-      fmt.Printf("recv: %v\n", val)
+      fmt.Printf("recv: %d\n", val)
       if val == n - 1 {
         break
       }
@@ -58,7 +58,7 @@ func ChSyncAsyncPipe() {
   }()
   for val := range n {
     ch.Send(val)
-    fmt.Printf("send %v\n", val)
+    fmt.Printf("send %d\n", val)
   }
   // sync channel: send/recv 0, 1, 2
   // async channel: send 0, 1, 2; recv 0, 1, 2
@@ -101,15 +101,15 @@ func ChEarlyExit() {
     for {
       select {
       case <- stop:
-        fmt.Printf("%v: stop\n", i)
+        fmt.Printf("%d: stop\n", i)
         return
       case val, open := <- ch:
         if !open {
-          fmt.Printf("%v: done\n", i)
+          fmt.Printf("%d: done\n", i)
           return
         }
         time.Sleep(800 * time.Millisecond)
-        fmt.Printf("%v: %v\n", i, val)
+        fmt.Printf("%d: %d\n", i, val)
       }
     }
   }
@@ -183,7 +183,7 @@ func ChBroadcast() {
     defer wg.Done()
     for val := range src {
       time.Sleep(800 * time.Millisecond)
-      fmt.Printf("%v: %v\n", i, val)
+      fmt.Printf("%d: %d\n", i, val)
     }
   }
   broadcast := func(src <-chan int, n int) []chan int {
@@ -300,7 +300,7 @@ func ChTee() {
     defer wg.Done()
     for val := range src {
       time.Sleep(800 * time.Millisecond)
-      fmt.Printf("%v: %v\n", i, val)
+      fmt.Printf("%d: %d\n", i, val)
     }
   }
   src := make(chan int)

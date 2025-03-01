@@ -1,4 +1,4 @@
-package cc
+package concur
 
 import (
 	"fmt"
