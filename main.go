@@ -20,7 +20,8 @@ func concurTest() {
   // concur.CndAllJoined()
 
   // * semaphore
-  concur.SemConcurrencyLimit()
+  // concur.SemCndConcurLimit()
+  concur.SemChConcurLimit()
 
   // * wait group
   // concur.WGAllDone()

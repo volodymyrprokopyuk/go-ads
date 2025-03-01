@@ -9,15 +9,15 @@ import (
 )
 
 type Channel[T any] struct {
-  capSem *Semaphore // sender
-  lenSem *Semaphore // receiver
+  capSem *SemaphoreCnd // sender
+  lenSem *SemaphoreCnd // receiver
   que *ads.Queue[T]
   mtx *sync.Mutex
 }
 
 func NewChannel[T any](cap int) *Channel[T] {
   return &Channel[T]{
-    capSem: NewSemaphore(cap), lenSem: NewSemaphore(0),
+    capSem: NewSemaphoreCnd(cap), lenSem: NewSemaphoreCnd(0),
     que: &ads.Queue[T]{}, mtx: &sync.Mutex{},
   }
 }
