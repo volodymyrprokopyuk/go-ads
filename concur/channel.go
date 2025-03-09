@@ -177,6 +177,66 @@ func ChFanOutFanIn() {
   }
 }
 
+func fanOut[T any](n int, in <-chan T) []chan T {
+  outs := make([]chan T, n)
+  for i := range n {
+    outs[i] = make(chan T)
+  }
+  go func() {
+    defer func() { // Close all out channels after relaying all in messages
+      for _, out := range outs {
+        close(out)
+      }
+    }()
+    for {
+      for _, out := range outs { // Round-robin fan-out over the out channels
+        v, open := <- in
+        if !open {
+          return
+        }
+        out <- v
+      }
+    }
+  }()
+  return outs
+}
+
+func fanIn[T any](ins []chan T) <-chan T {
+  out := make(chan T)
+  var wg sync.WaitGroup
+  for _, in := range ins {
+    wg.Add(1)
+    go func() { // A dedicated goroutine for each in channel
+      defer wg.Done()
+      for v := range in {
+        time.Sleep(900 * time.Millisecond)
+        out <- v
+      }
+    }()
+  }
+  // Wait for all dedicated goroutines before closing the out channel
+  go func() {
+    wg.Wait()
+    close(out)
+  }()
+  return out
+}
+
+func ChFanOutFanIn2() {
+  in := make(chan int)
+  outs := fanOut(4, in)
+  out := fanIn(outs)
+  go func() {
+    for i := range 10 {
+      in <- i
+    }
+    close(in)
+  }()
+  for v := range out {
+    fmt.Println(v)
+  }
+}
+
 func ChBroadcast() {
   var wg sync.WaitGroup
   task := func(i int, src <-chan int) {

@@ -21,7 +21,7 @@ func concurTest() {
 
   // * semaphore
   // concur.SemCndConcurLimit()
-  concur.SemChConcurLimit()
+  // concur.SemChConcurLimit()
 
   // * wait group
   // concur.WGAllDone()
@@ -34,6 +34,7 @@ func concurTest() {
   // concur.ChMultiSendReceive()
   // concur.ChEarlyExit()
   // concur.ChFanOutFanIn()
+  concur.ChFanOutFanIn2()
   // concur.ChBroadcast()
   // concur.ChPipeline()
   // concur.ChErrorHandling()
