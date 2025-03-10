@@ -6,7 +6,8 @@ import (
 )
 
 func patternTest() {
-  pattern.PatDecorator()
+  // pattern.PatDecorator()
+  pattern.PatOptions()
 }
 
 func concurTest() {
@@ -34,7 +35,7 @@ func concurTest() {
   // concur.ChMultiSendReceive()
   // concur.ChEarlyExit()
   // concur.ChFanOutFanIn()
-  concur.ChFanOutFanIn2()
+  // concur.ChFanOutFanIn2()
   // concur.ChBroadcast()
   // concur.ChPipeline()
   // concur.ChErrorHandling()
@@ -55,7 +56,7 @@ func concurProblem() {
 
 
 func main() {
-  // patternTest()
-  concurTest()
+  patternTest()
+  // concurTest()
   // concurProblem()
 }
