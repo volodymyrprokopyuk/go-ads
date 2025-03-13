@@ -48,9 +48,6 @@ func concurTest() {
   // * context
   // concur.CtxCancelTimeout()
   // concur.CtxGracefulTermination()
-
-  // * circuit breaker
-  concur.CbrExecute()
 }
 
 func concurProblem() {
