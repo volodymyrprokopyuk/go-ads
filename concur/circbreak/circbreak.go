@@ -24,7 +24,7 @@ type Config struct {
 
 type CircuitBreaker[R any] struct {
   cfg Config
-  mtx sync.RWMutex
+  mtx sync.RWMutex // Sync access to the state from concurrent Execute calls
   state state // The state of the circuit breaker
   cntFail int // The count of failures since the last reset
   cntSucc int // The count of successful calls since the last reset

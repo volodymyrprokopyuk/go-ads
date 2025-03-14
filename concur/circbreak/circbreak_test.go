@@ -21,14 +21,16 @@ func makeCall[R any](res R, delay int) func() (R, error) {
 
 func TestCircuitBreaker(t *testing.T) {
   cbr := circbreak.New[int](circbreak.Config{
-    Timeout: 100 * time.Millisecond, MaxFail: 3,
-    OpenInterval: 500 * time.Millisecond, MinSucc: 2,
+    Timeout: 100 * time.Millisecond,
+    MaxFail: 3,
+    OpenInterval: 500 * time.Millisecond,
+    MinSucc: 2,
     ResetPeriod: 500 * time.Millisecond,
   })
   for i, delay := range []int{
     // Closed => Open => HalfOpen => Open => HalfOpen => Closed
     50, 50, 50, 110, 55, 110, 10, 11, 50, 110, 10, 11, 50, 50, 50,
-    // Reset and Closed
+    // Reset => Reset in Closed
     110, 90, 110, 90, 90, 110, 90, 110, 90, 90, 90,
   } {
     call := makeCall(i, delay)
