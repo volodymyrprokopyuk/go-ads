@@ -102,10 +102,10 @@ func (c *CircuitBreaker[R]) Execute(call func() (R, error)) (R, error) {
   case <- time.After(c.cfg.Timeout):
     cntFail++
     err = fmt.Errorf("timeout after %s", c.cfg.Timeout)
-  case res = <- succ:
-    cntSucc++
   case err = <- fail:
     cntFail++
+  case res = <- succ:
+    cntSucc++
   }
   // Transition to the right state
   c.mtx.Lock()

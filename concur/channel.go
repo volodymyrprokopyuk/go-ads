@@ -537,3 +537,32 @@ func ChPool() {
   }
   wg.Wait()
 }
+
+func ChTimeout() {
+  task := func(delay int) (int, error) {
+    time.Sleep(time.Duration(delay) * time.Millisecond)
+    if delay == 111 {
+      return 0, fmt.Errorf("task error")
+    }
+    return delay, nil
+  }
+  succ, fail := make(chan int), make(chan error)
+  go func() {
+    defer close(succ)
+    defer close(fail)
+    res, err := task(111)
+    if err != nil {
+      fail <- err
+      return
+    }
+    succ <- res
+  }()
+  select {
+  case <- time.After(200 * time.Millisecond):
+    fmt.Println("timeout")
+  case err := <- fail:
+    fmt.Println(err)
+  case res := <- succ:
+    fmt.Println(res)
+  }
+}

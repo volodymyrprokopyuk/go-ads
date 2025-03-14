@@ -44,10 +44,11 @@ func concurTest() {
   // concur.ChHeartbeat()
   // concur.ChAsyncRateLimiter()
   // concur.ChPool()
+  concur.ChTimeout()
 
   // * context
   // concur.CtxCancelTimeout()
-  concur.CtxGracefulTermination()
+  // concur.CtxGracefulTermination()
 }
 
 func concurProblem() {
@@ -56,7 +57,7 @@ func concurProblem() {
 
 
 func main() {
-  patternTest()
+  // patternTest()
   concurTest()
-  concurProblem()
+  // concurProblem()
 }
