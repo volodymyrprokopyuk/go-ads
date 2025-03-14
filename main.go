@@ -7,7 +7,8 @@ import (
 
 func patternTest() {
   // pattern.PatDecorator()
-  pattern.PatOptions()
+  // pattern.PatOptions()
+  pattern.PatRetry()
 }
 
 func concurTest() {
@@ -57,7 +58,7 @@ func concurProblem() {
 
 
 func main() {
-  // patternTest()
-  concurTest()
+  patternTest()
+  // concurTest()
   // concurProblem()
 }
