@@ -11,6 +11,10 @@ import (
 func makeCall[R any](res R, delay int) func() (R, error) {
   return func() (R, error) {
     time.Sleep(time.Duration(delay) * time.Millisecond)
+    if delay == 55 {
+      var r R
+      return r, fmt.Errorf("call failure %d", delay)
+    }
     return res, nil
   }
 }
@@ -23,7 +27,7 @@ func TestCircuitBreaker(t *testing.T) {
   })
   for i, delay := range []int{
     // Closed => Open => HalfOpen => Open => HalfOpen => Closed
-    50, 50, 50, 110, 110, 110, 10, 11, 50, 110, 10, 11, 50, 50, 50,
+    50, 50, 50, 110, 55, 110, 10, 11, 50, 110, 10, 11, 50, 50, 50,
     // Reset and Closed
     110, 90, 110, 90, 90, 110, 90, 110, 90, 90, 90,
   } {

@@ -23,9 +23,9 @@ func lt[T cmp.Ordered](a, b T) bool {
   return a < b
 }
 
-func gt[T cmp.Ordered](a, b T) bool {
-  return b < a
-}
+// func gt[T cmp.Ordered](a, b T) bool {
+//   return b < a
+// }
 
 func cm[T cmp.Ordered](a, b T) int {
   if a < b {

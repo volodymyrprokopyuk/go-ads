@@ -434,7 +434,7 @@ func ChHeartbeat() {
         case <- tick.C:
           select {
           case beat <- struct{}{}: // send heartbeat
-          // default: // do not block if heartbeat is not read
+          default: // do not block if heartbeat is not read
           }
         case val, open := <- src:
           if !open {

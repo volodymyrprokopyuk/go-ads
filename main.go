@@ -47,16 +47,16 @@ func concurTest() {
 
   // * context
   // concur.CtxCancelTimeout()
-  // concur.CtxGracefulTermination()
+  concur.CtxGracefulTermination()
 }
 
 func concurProblem() {
-  concur.ChSieveOfEratosthenes()
+  // concur.ChSieveOfEratosthenes()
 }
 
 
 func main() {
-  // patternTest()
+  patternTest()
   concurTest()
-  // concurProblem()
+  concurProblem()
 }

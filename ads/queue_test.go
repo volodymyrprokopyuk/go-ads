@@ -22,7 +22,7 @@ func TestQueue(t *testing.T) {
   if got != exp {
     t.Errorf("invalid deq: expected %v, got %v", exp, got)
   }
-  got, _ = que.Deq()
+  _, _ = que.Deq()
   _, err := que.Peek()
   if err == nil {
     t.Errorf("expected peek head from empty dlist error, got none")

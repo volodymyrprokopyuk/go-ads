@@ -22,7 +22,7 @@ func TestStack(t *testing.T) {
   if got != exp {
     t.Errorf("Invalid pop: expected %v, got %v", exp, got)
   }
-  got, _ = stk.Pop()
+  _, _ = stk.Pop()
   _, err := stk.Peek()
   if err == nil {
     t.Errorf("expected peek from empty list error, got none")

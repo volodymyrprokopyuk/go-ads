@@ -34,13 +34,13 @@ type CircuitBreaker[R any] struct {
 
 func New[R any](cfg Config) *CircuitBreaker[R] {
   c := &CircuitBreaker[R]{cfg: cfg}
-  c.state = stClosed
+  c.state = stClosed // The initial state is Closed
   c.tckReset = time.NewTicker(c.cfg.ResetPeriod)
-  go c.periodicReset()
+  go c.cntReset()
   return c
 }
 
-func (c *CircuitBreaker[R]) periodicReset() {
+func (c *CircuitBreaker[R]) cntReset() {
   for range c.tckReset.C {
     c.mtx.Lock()
     if c.state == stClosed {
@@ -76,7 +76,7 @@ func (c *CircuitBreaker[R]) stateHalfOpen() {
 
 func (c *CircuitBreaker[R]) Execute(call func() (R, error)) (R, error) {
   var res R
-  // Immediately return with an error when in the Open state
+  // Immediately return an error when in the Open state
   c.mtx.RLock()
   if c.state == stOpen {
     c.mtx.RUnlock()
@@ -86,8 +86,8 @@ func (c *CircuitBreaker[R]) Execute(call func() (R, error)) (R, error) {
   // Execute the external call in a dedicated goroutine
   succ, fail := make(chan R), make(chan error)
   go func() {
-    defer close(fail)
     defer close(succ)
+    defer close(fail)
     res, err := call()
     if err != nil {
       fail <- err
@@ -118,7 +118,7 @@ func (c *CircuitBreaker[R]) Execute(call func() (R, error)) (R, error) {
   if c.state == stHalfOpen && c.cntFail > 0 { // HalfOpen => Open
     c.stateOpen()
   }
-  if c.state == stHalfOpen && c.cntSucc > c.cfg.MinSucc { // HalfOpen => Closed
+  if c.state == stHalfOpen && c.cntSucc >= c.cfg.MinSucc { // HalfOpen => Closed
     c.stateClosed()
   }
   return res, err

@@ -34,7 +34,7 @@ func TestList(t *testing.T) {
     }
     break
   }
-  got, _ = lst.Pop()
+  _, _ = lst.Pop()
   _, err := lst.Peek()
   if err == nil {
     t.Errorf("expected peek from empty list error, got none")
@@ -74,7 +74,7 @@ func TestDListPushPeekPopHead(t *testing.T) {
   if got != exp {
     t.Errorf("invalid pop head: expected %v, got %v", exp, got)
   }
-  got, _ = lst.PopHead()
+  _, _ = lst.PopHead()
   _, err := lst.PeekHead()
   if err == nil {
     t.Errorf("expected peek head from empty list error, got none")
@@ -101,7 +101,7 @@ func TestDListPushPeekPopTail(t *testing.T) {
   if got != exp {
     t.Errorf("invalid pop tail: expected %v, got %v", exp, got)
   }
-  got, _ = lst.PopTail()
+  _, _ = lst.PopTail()
   _, err := lst.PeekTail()
   if err == nil {
     t.Errorf("expected peek tail from empty list error, got none")
