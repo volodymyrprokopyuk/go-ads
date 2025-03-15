@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-
 func New[T, U any](
   call func(req T) (U, error), maxCalls int, period time.Duration,
 ) func (req T) (U, error) {
