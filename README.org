@@ -1,3 +1,14 @@
 * Algorithms and data structures in Go
 
 * Concurrency primitives and design patterns
+
+* Testing
+
+- Run the whole test suite storing the test coverage to a file
+#+BEGIN_SRC fish
+go test -v -cover -coverprofile=coverage.cov ./... -run .
+#+END_SRC
+- Show the HTML test coverage report in a browser
+#+BEGIN_SRC fish
+go tool cover -html=coverage.cov
+#+END_SRC
