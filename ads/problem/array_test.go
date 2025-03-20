@@ -1,6 +1,7 @@
 package problem_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/volodymyrprokopyuk/go-ads/ads/problem"
@@ -24,6 +25,25 @@ func TestUniqueChars(t *testing.T) {
       unique = problem.UniqueCharsSort(c.str)
       if unique != c.unique {
         t.Errorf("UniqueCharsSort: expected %t, got %t", c.unique, unique)
+      }
+    })
+  }
+}
+
+func TestIsPermutation(t *testing.T) {
+  cases := []struct{ a, b string; permut bool }{
+    {"", "", true}, {"ab", "ba", true}, {"abc", "cab", true},
+    {"a", "b", false}, {"abc", "bcd", false},
+  }
+  for _, c := range cases {
+    t.Run(fmt.Sprintf("%s %s", c.a, c.b), func(t *testing.T) {
+      permut := problem.IsPermutation(c.a, c.b)
+      if permut != c.permut {
+        t.Errorf("IsPermutation: expected %t, got %t", c.permut, permut)
+      }
+      permut = problem.IsPermutationBitVector(c.a, c.b)
+      if permut != c.permut {
+        t.Errorf("IsPermutationBitVector: expected %t, got %t", c.permut, permut)
       }
     })
   }

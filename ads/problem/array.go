@@ -46,3 +46,34 @@ func UniqueCharsSort(str string) bool {
   }
   return true
 }
+
+// Given two strings, determine if one is a permutation of the other
+// O(m + n) time, O(1) space
+func IsPermutation(a, b string) bool {
+  if len(a) != len(b) {
+    return false
+  }
+  aseen, bseen := make([]bool, 128), make([]bool, 128)
+  for _, c := range a {
+    aseen[c] = true
+  }
+  for _, c := range b {
+    bseen[c] = true
+  }
+  return slices.Equal(aseen, bseen)
+}
+
+// O(m + n) time, O(1) space
+func IsPermutationBitVector(a, b string) bool {
+  if len(a) != len(b) {
+    return false
+  }
+  var avec, bvec int
+  for _, c := range a {
+    avec |= (1 << (c - 'a'))
+  }
+  for _, c := range b {
+    bvec |= (1 << (c - 'a'))
+  }
+  return avec == bvec
+}
