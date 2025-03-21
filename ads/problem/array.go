@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// Determine if a string has all unique characters. What if you cannot use
+// * Determine if a string has all unique characters. What if you cannot use
 // additional data structures?
 // O(n) time, O(1) space
 func UniqueChars(str string) bool {
@@ -47,8 +47,8 @@ func UniqueCharsSort(str string) bool {
   return true
 }
 
-// Given two strings, determine if one is a permutation of the other
-// O(m + n) time, O(1) space
+// * Given two strings, determine if one is a permutation of the other
+// O(n) time, O(1) space
 func IsPermutation(a, b string) bool {
   if len(a) != len(b) {
     return false
@@ -63,7 +63,7 @@ func IsPermutation(a, b string) bool {
   return slices.Equal(aseen, bseen)
 }
 
-// O(m + n) time, O(1) space
+// O(n) time, O(1) space
 func IsPermutationBitVector(a, b string) bool {
   if len(a) != len(b) {
     return false
@@ -78,6 +78,7 @@ func IsPermutationBitVector(a, b string) bool {
   return avec == bvec
 }
 
+// O(n) time, O(1) space
 func IsPermutationSort(a, b string) bool {
   if len(a) != len(b) {
     return false
@@ -87,6 +88,7 @@ func IsPermutationSort(a, b string) bool {
   return slices.Equal(aslc, bslc)
 }
 
+// O(n) time, O(1) space
 func IsPermutationCounts(a, b string) bool {
   if len(a) != len(b) {
     return false
@@ -99,4 +101,20 @@ func IsPermutationCounts(a, b string) bool {
     bcnt[c]++
   }
   return slices.Equal(acnt, bcnt)
+}
+
+// * Replace all spaces in a string with %20
+// O(n) time, O(1) space
+func URLify(url string) string {
+  slc := strings.Split(url, "")
+  res := make([]string, len(slc))
+  for _, c := range slc {
+    if c == " " {
+      res = append(res, "%20")
+    } else {
+      res = append(res, c)
+    }
+  }
+  str := strings.Join(res, "")
+  return str
 }

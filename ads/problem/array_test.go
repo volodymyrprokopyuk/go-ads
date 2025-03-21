@@ -56,3 +56,18 @@ func TestIsPermutation(t *testing.T) {
     })
   }
 }
+
+func TestURLify(t *testing.T) {
+  cases := []struct{ url, escaped string }{
+    {"abc", "abc"}, {"a b c", "a%20b%20c"},
+  }
+  for _, c := range cases {
+    t.Run(c.url, func(t *testing.T) {
+      t.Parallel()
+      escaped := problem.URLify(c.url)
+      if escaped != c.escaped {
+        t.Errorf("URLify: %s expected, %s got", c.escaped, escaped)
+      }
+    })
+  }
+}
