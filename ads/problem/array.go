@@ -53,7 +53,7 @@ func IsPermutation(a, b string) bool {
   if len(a) != len(b) {
     return false
   }
-  aseen, bseen := make([]bool, 128), make([]bool, 128)
+  aseen, bseen := make([]bool, 128), make([]bool, 128) // ASCII alphabet
   for _, c := range a {
     aseen[c] = true
   }
@@ -70,10 +70,33 @@ func IsPermutationBitVector(a, b string) bool {
   }
   var avec, bvec int
   for _, c := range a {
-    avec |= (1 << (c - 'a'))
+    avec |= (1 << (c - 'a')) // ASCII alphabet
   }
   for _, c := range b {
     bvec |= (1 << (c - 'a'))
   }
   return avec == bvec
+}
+
+func IsPermutationSort(a, b string) bool {
+  if len(a) != len(b) {
+    return false
+  }
+  aslc, bslc := strings.Split(a, ""), strings.Split(b, "")
+  slices.Sort(aslc); slices.Sort(bslc)
+  return slices.Equal(aslc, bslc)
+}
+
+func IsPermutationCounts(a, b string) bool {
+  if len(a) != len(b) {
+    return false
+  }
+  acnt, bcnt := make([]int, 128), make([]int, 128) // ASCII alphabet
+  for _, c := range a {
+    acnt[c]++
+  }
+  for _, c := range b {
+    bcnt[c]++
+  }
+  return slices.Equal(acnt, bcnt)
 }

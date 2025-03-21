@@ -45,6 +45,14 @@ func TestIsPermutation(t *testing.T) {
       if permut != c.permut {
         t.Errorf("IsPermutationBitVector: expected %t, got %t", c.permut, permut)
       }
+      permut = problem.IsPermutationSort(c.a, c.b)
+      if permut != c.permut {
+        t.Errorf("IsPermutationSort: expected %t, got %t", c.permut, permut)
+      }
+      permut = problem.IsPermutationCounts(c.a, c.b)
+      if permut != c.permut {
+        t.Errorf("IsPermutationCounts: expected %t, got %t", c.permut, permut)
+      }
     })
   }
 }
