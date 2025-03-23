@@ -21,7 +21,7 @@ func UniqueChars(str string) bool {
 }
 
 // O(n) time, O(1) space
-func UniqueCharsBitVector(str string) bool {
+func UniqueCharsBitVec(str string) bool {
   var seen int // Bit vector
   for _, c := range str {
     pos := 1 << (c - 'a') // a-z alphabet
@@ -64,7 +64,7 @@ func IsPermutation(a, b string) bool {
 }
 
 // O(n) time, O(1) space
-func IsPermutationBitVector(a, b string) bool {
+func IsPermutationBitVec(a, b string) bool {
   if len(a) != len(b) {
     return false
   }
@@ -117,4 +117,32 @@ func URLify(url string) string {
   }
   str := strings.Join(res, "")
   return str
+}
+
+// Check is a string is a permutation of a palindrome
+// O(n) time, O(1) space
+func IsPalindrPermut(str string) bool {
+  cnts := make([]int, 128) // ASCII alphabet
+  for _, c := range str {
+    cnts[c]++
+  }
+  middle := false
+  for _, cnt := range cnts {
+    if cnt % 2 == 1 {
+      if middle {
+        return false // More than one middle odd chars
+      }
+      middle = true
+    }
+  }
+  return true
+}
+
+func IsPalindrPermutBitVec(str string) bool {
+  var cnts int // Bit vector
+  for _, c := range str {
+    // Flips the char bit to track even or odd char occurrence
+    cnts ^= (1 << (c - 'a')) // ASCII alphabet
+  }
+  return cnts & (cnts - 1) == 0 // As most one odd is allowed
 }
