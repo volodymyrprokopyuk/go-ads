@@ -138,6 +138,7 @@ func IsPalindrPermut(str string) bool {
   return true
 }
 
+// O(n) time, O(1) space
 func IsPalindrPermutBitVec(str string) bool {
   var cnts int // Bit vector
   for _, c := range str {
@@ -145,4 +146,40 @@ func IsPalindrPermutBitVec(str string) bool {
     cnts ^= (1 << (c - 'a')) // ASCII alphabet
   }
   return cnts & (cnts - 1) == 0 // As most one odd is allowed
+}
+
+// Check if two strings are one edit away: insert, delete, or replace
+// O(n) time, O(1) space
+func IsOneEditAway (a, b string) bool {
+  if len(a) < len(b) {
+    a, b = b, a // The a string is larger or equal to the b string
+  }
+  if len(a) - len(b) > 1 {
+    return false
+  }
+  if len(a) == len(b) {
+    replace := false
+    for i := range len(a) {
+      if a[i] != b[i] {
+        if replace {
+          return false // More than one replace
+        }
+        replace = true
+      }
+    }
+    return true
+  }
+  delete := false
+  for i, j := 0, 0; i < len(a) && j < len(b); {
+    if a[i] != b[j] {
+      if delete {
+        return false // More than one delete
+      }
+      delete = true
+      i++ // Advance only the deleted char from the larger string
+      continue
+    }
+    i++; j++ // Advance both strings with equal chars
+  }
+  return true
 }

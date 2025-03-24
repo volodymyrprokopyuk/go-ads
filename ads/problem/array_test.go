@@ -97,3 +97,33 @@ func TestIsPalindrPermut(t *testing.T) {
     })
   }
 }
+
+func TestIsOneEditAway(t *testing.T) {
+  cases := []struct{ a, b string; edit bool }{
+    // Replace
+    {"abc", "xbc", true},
+    {"abc", "axc", true},
+    {"abc", "abx", true},
+    {"abc", "xyb", false},
+    // Delete
+    {"abc", "bc", true},
+    {"abc", "ac", true},
+    {"abc", "ab", true},
+    {"abdef", "abcdef", true},
+    {"abc", "a", false},
+
+    {"pale", "ple", true},
+    {"pales", "pale", true},
+    {"pale", "bale", true},
+    {"pale", "bae", false},
+  }
+  for _, c := range cases {
+    t.Run(fmt.Sprintf("%s %s", c.a, c.b), func(t *testing.T) {
+      t.Parallel()
+      edit := problem.IsOneEditAway(c.a, c.b)
+      if edit != c.edit {
+        t.Errorf("IsOneEditAway: expected %t, got %t", c.edit, edit)
+      }
+    })
+  }
+}
