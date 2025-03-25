@@ -1,6 +1,7 @@
 package problem
 
 import (
+	"fmt"
 	"slices"
 	"strings"
 )
@@ -104,7 +105,7 @@ func IsPermutationCounts(a, b string) bool {
 }
 
 // * Replace all spaces in a string with %20
-// O(n) time, O(1) space
+// O(n) time, O(n) space
 func URLify(url string) string {
   slc := strings.Split(url, "")
   res := make([]string, len(slc))
@@ -182,4 +183,32 @@ func IsOneEditAway (a, b string) bool {
     i++; j++ // Advance both strings with equal chars
   }
   return true
+}
+
+// Compress a string using counts of repeated characters
+// O(n) time, O(n) space
+func StrCompress(str string) string {
+  var bld strings.Builder
+  var zero rune
+  last, cnt := zero, 0
+  for _, c := range str {
+    if c == last {
+      cnt++ // Increase the counter of the repeated char
+      continue
+    }
+    if last != zero { // Write the last char with its counter
+      bld.WriteRune(last)
+      bld.WriteString(fmt.Sprintf("%d", cnt))
+    }
+    last, cnt = c, 1 // Reset the counter for a new char
+  }
+  if last != zero { // Write the last char with its counter
+    bld.WriteRune(last)
+    bld.WriteString(fmt.Sprintf("%d", cnt))
+  }
+  arc := bld.String()
+  if len(arc) < len(str) {
+    return arc
+  }
+  return str
 }

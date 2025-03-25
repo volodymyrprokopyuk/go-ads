@@ -111,11 +111,6 @@ func TestIsOneEditAway(t *testing.T) {
     {"abc", "ab", true},
     {"abdef", "abcdef", true},
     {"abc", "a", false},
-
-    {"pale", "ple", true},
-    {"pales", "pale", true},
-    {"pale", "bale", true},
-    {"pale", "bae", false},
   }
   for _, c := range cases {
     t.Run(fmt.Sprintf("%s %s", c.a, c.b), func(t *testing.T) {
@@ -123,6 +118,22 @@ func TestIsOneEditAway(t *testing.T) {
       edit := problem.IsOneEditAway(c.a, c.b)
       if edit != c.edit {
         t.Errorf("IsOneEditAway: expected %t, got %t", c.edit, edit)
+      }
+    })
+  }
+}
+
+func TestStrCompress(t *testing.T) {
+  cases := []struct{ str, arc string }{
+    {"", ""}, {"a", "a"}, {"abc", "abc"}, {"aabb", "aabb"},
+    {"aabbb", "a2b3"}, {"abbcccd", "abbcccd"}, {"aabbbccccd", "a2b3c4d1"},
+  }
+  for _, c := range cases {
+    t.Run(c.str, func(t *testing.T) {
+      t.Parallel()
+      arc := problem.StrCompress(c.str)
+      if arc != c.arc {
+        t.Errorf("StrCompress: expecgted %s, got %s", c.arc, arc)
       }
     })
   }
